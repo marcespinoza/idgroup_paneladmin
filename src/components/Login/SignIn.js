@@ -88,7 +88,6 @@ function SignIn(props) {
           <CssTextField
         className={classes.margin}
         label="Usuario"
-        variant="outlined"
         margin="normal"
         fullWidth
         id="custom-css-outlined-input"
@@ -96,7 +95,6 @@ function SignIn(props) {
       <CssTextField
         className={classes.margin}
         label="Contraseña"
-        variant="outlined"
         margin="normal"
         fullWidth
         id="custom-css-outlined-input"
