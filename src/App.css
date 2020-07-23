@@ -13,6 +13,8 @@
   }
 }
 
+
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -35,4 +37,15 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+@font-face {
+  font-family: 'roboto_bold';
+  src: local('Roboto'), url(./fonts/roboto_bold.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'roboto_black';
+    font-weight: 900;
+    src: local('Roboto'), url(./fonts/Roboto-Black.ttf) format('truetype');
 }

@@ -1,17 +1,24 @@
 import React from 'react';
 import MaterialTable from 'material-table';
+import Camera from './../../utils/icons.js'
+
+
+
 
 export default function ClientTable() {
   const [state, setState] = React.useState({
     columns: [
-      { title: 'Name', field: 'name' },
-      { title: 'Surname', field: 'surname' },
-      { title: 'Birth Year', field: 'birthYear', type: 'numeric' },
-      {
-        title: 'Birth Place',
-        field: 'birthCity',
-        lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' },
-      },
+      { title: 'Fecha', field: 'name' , 
+      // cellStyle: {
+      //   backgroundColor: '#039be5',
+      //   color: '#FFF'
+      // },
+     
+    },
+      { title: 'Monto', field: 'surname' },
+      { title: 'Cotizacion', field: 'birthYear', type: 'numeric' },
+      {title: 'Refuerzo 1', field: 'birthCity',lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' }, },
+      {title: 'Refuerzo 2', field: 'birthCity',lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' }, },
     ],
     data: [
       { name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },
@@ -27,10 +34,10 @@ export default function ClientTable() {
 
   return (
     <MaterialTable
-      title="Clientes"
+      title="Cuotas"
       columns={state.columns}
-      style={{width:'50%'}}
       data={state.data}
+      style={{width:'50%'}}
       editable={{
         onRowAdd: (newData) =>
           new Promise((resolve) => {
@@ -83,7 +90,16 @@ export default function ClientTable() {
                 },        
       }}
       options={{
-        pageSize:3
+        pageSize:3,
+         headerStyle: {
+        backgroundColor: '#81CCFE',
+        fontFamily:'Roboto',
+        fontWeight: 900,
+        color:'#717171'
+      }
+      }}
+      icons={{ 
+        Add: Camera 
       }}
     />
   );

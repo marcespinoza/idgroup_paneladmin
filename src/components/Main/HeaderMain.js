@@ -6,8 +6,9 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import ClientTable from './ClientTable'
-
+import TablaCliente from './TablaCliente';
+import TablaCuota from './TablaCuota';
+import { FormLabel } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,15 +33,17 @@ export default function ButtonAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            ID Groupnp s
+            ID Group
           </Typography>
           <Button color="inherit">Login</Button>
         </Toolbar>        
       </AppBar>
-      <ClientTable/>
-      <label>
-        Name:
-      </label>
+      <TablaCliente/>
+      <TablaCuota/>
+      <view style={{flexDirection:'row'}}>
+      <FormLabel>Hola</FormLabel>
+      <FormLabel>Hola</FormLabel>
+      </view>
     </div>
   );
 }
