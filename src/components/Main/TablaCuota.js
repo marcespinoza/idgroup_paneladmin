@@ -1,6 +1,6 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import Camera from './../../utils/icons.js'
+import {Editar, Eliminar} from './../../utils/Icons.js'
 
 
 
@@ -99,7 +99,8 @@ export default function ClientTable() {
       }
       }}
       icons={{ 
-        Add: Camera 
+        Delete: Eliminar,
+        Edit: Editar
       }}
     />
   );

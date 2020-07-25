@@ -13,6 +13,10 @@ import Container from '@material-ui/core/Container';
 import logo from '../.././/Images/logo_circular.png';
 import { withStyles } from '@material-ui/core/styles';
 import purple from "@material-ui/core/colors/purple";
+import axios from "axios";
+import {Redirect} from "react-router-dom";
+import useFullPageLoader from './../../hooks/useFullPageLoader';
+import {useHistory} from 'react-router-dom'
 
 
 function Copyright() {
@@ -32,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
+    flex:1,
     flexDirection: 'column',
     alignItems: 'center',
   },
@@ -52,6 +57,9 @@ const useStyles = makeStyles((theme) => ({
     width: 100,
     height: 100,
   },
+  lottieStyle: {
+    width: '340px', margin: 'auto', display: 'block' 
+   }
 }));
 
 const CssTextField = withStyles({
@@ -76,12 +84,46 @@ const CssTextField = withStyles({
   },
 })(TextField);
 
+
 function SignIn(props) {
+
   const classes = useStyles();
+  const [loader, showLoader, hideLoader] = useFullPageLoader();
+  const history = useHistory()
+
+  const getLogin = async() =>{
+    try{
+      showLoader();
+      axios.post('http://admidgroup.com/api_rest/index.php/api/loginusuario', {
+        usuario: 'marcespinoza',
+        clave: '031586',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          "Access-Control-Allow-Headers":"X-Requested-With"
+         },
+        })
+          .then(response => {
+             if(response.data.status=='true'){
+               history.push("/main");
+             }else{
+
+             }
+             hideLoader();
+            })
+          .catch(error => {
+              console.error('There was an error!', error);
+        });
+    }catch(error){
+      console.error('There was an error!', error);
+    }
+  }                                     
+  
 
   return (
+    <>
     <Container component="main" maxWidth="xs">
       <CssBaseline />
+      
       <div className={classes.paper}>
          <img src={logo} className={classes.photo} alt="Logo" />
         <form className={classes.form} noValidate>
@@ -104,12 +146,10 @@ function SignIn(props) {
             label="Recuerdame"
           />
           <Button
-            type="submit"
             fullWidth
             variant="contained"
-            
-            className={classes.submit}
-          >
+            onClick={() => { getLogin()}}
+            className={classes.submit}>
             Iniciar sesión
           </Button>
         </form>
@@ -118,6 +158,8 @@ function SignIn(props) {
         <Copyright />
       </Box>
     </Container>
+    {loader}
+    </>
   );
 }
 

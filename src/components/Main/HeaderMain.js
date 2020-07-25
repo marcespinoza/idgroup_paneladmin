@@ -28,22 +28,22 @@ export default function ButtonAppBar() {
   return (
     <div className={classes.root}>
       <AppBar position="static">
-        <Toolbar>
+        <Toolbar style={{backgroundColor:'#333333'}}>
           <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            ID Group
+            Panel de administración
           </Typography>
           <Button color="inherit">Login</Button>
         </Toolbar>        
       </AppBar>
       <TablaCliente/>
       <TablaCuota/>
-      <view style={{flexDirection:'row'}}>
+      <div style={{flexDirection:'row'}}>
       <FormLabel>Hola</FormLabel>
       <FormLabel>Hola</FormLabel>
-      </view>
+      </div>
     </div>
   );
 }
