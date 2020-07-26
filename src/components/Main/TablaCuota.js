@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import MaterialTable from 'material-table';
 import {Editar, Eliminar} from './../../utils/Icons.js'
 
@@ -32,12 +32,15 @@ export default function ClientTable() {
     ],
   });
 
+  
+  
+
   return (
     <MaterialTable
       title="Cuotas"
       columns={state.columns}
       data={state.data}
-      style={{width:'50%'}}
+      style={{width:'50%', margin:10}}
       editable={{
         onRowAdd: (newData) =>
           new Promise((resolve) => {
@@ -92,10 +95,10 @@ export default function ClientTable() {
       options={{
         pageSize:3,
          headerStyle: {
-        backgroundColor: '#81CCFE',
+        backgroundColor: '#323232',
         fontFamily:'Roboto',
         fontWeight: 900,
-        color:'#717171'
+        color:'#DCDCDC'
       }
       }}
       icons={{ 

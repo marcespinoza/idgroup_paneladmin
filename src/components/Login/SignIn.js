@@ -96,17 +96,17 @@ function SignIn(props) {
       showLoader();
       axios.post('http://admidgroup.com/api_rest/index.php/api/loginusuario', {
         usuario: 'marcespinoza',
-        clave: '031586',
+        clave: '0315866',
         headers: {
           'Access-Control-Allow-Origin': '*',
           "Access-Control-Allow-Headers":"X-Requested-With"
          },
         })
           .then(response => {
-             if(response.data.status=='true'){
+             if(response.data.status==true){
                history.push("/main");
              }else{
-
+              console.log('Error de login', response.data.status==true);
              }
              hideLoader();
             })
@@ -114,7 +114,7 @@ function SignIn(props) {
               console.error('There was an error!', error);
         });
     }catch(error){
-      console.error('There was an error!', error);
+      console.error('There was an error two!', error);
     }
   }                                     
   

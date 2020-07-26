@@ -1,5 +1,7 @@
 import React from 'react';
 import MaterialTable from 'material-table';
+import {Editar, Eliminar} from './../../utils/Icons.js'
+
 
 export default function TablaCuota() {
   const [state, setState] = React.useState({
@@ -27,6 +29,7 @@ export default function TablaCuota() {
     <MaterialTable
       title="Clientes"
       columns={state.columns}
+      style={{margin:10}}
       data={state.data}
       editable={{
         onRowAdd: (newData) =>
@@ -80,7 +83,17 @@ export default function TablaCuota() {
                 },        
       }}
       options={{
-        pageSize:3
+        pageSize:3,
+         headerStyle: {
+        backgroundColor: '#323232',
+        fontFamily:'Roboto',
+        fontWeight: 900,
+        color:'#DCDCDC'
+      }
+      }}
+      icons={{ 
+        Delete: Eliminar,
+        Edit: Editar
       }}
     />
   );
