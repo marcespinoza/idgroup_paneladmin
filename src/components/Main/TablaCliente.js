@@ -1,36 +1,68 @@
-import React from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import MaterialTable from 'material-table';
 import {Editar, Eliminar} from './../../utils/Icons.js'
+import axios from "axios";
+import { AppContext } from './../Main/HeaderMain'
 
+export default function TablaCuota()  { 
 
-export default function TablaCuota() {
+  useEffect(() => {
+    getClientes()
+  },[]);
+
   const [state, setState] = React.useState({
     columns: [
-      { title: 'Apellido', field: 'name' },
-      { title: 'Nombre', field: 'surname' },
-      { title: 'Documento', field: 'birthYear', type: 'numeric' },
-      {title: 'Direccion', field: 'birthCity',lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' }, },
-      {title: 'Telefono', field: 'birthCity',lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' }, },
-      {title: 'Fecha nacimiento', field: 'birthCity',lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' }, },
-      {title: 'Interes', field: 'birthCity',lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' }, },
-      {title: 'Ocupacion', field: 'birthCity',lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' }, },
-      {title: 'Correo', field: 'birthCity',lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' }, },
+      { title: 'IdCliente', field: 'id_cliente', hidden:true },
+      { title: 'Apellido', field: 'apellido' },
+      { title: 'Nombre', field: 'nombre' },
+      { title: 'Documento', field: 'documento', type: 'numeric' },
+      {title: 'Direccion', field: 'direccion',lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' }, },
+      {title: 'Telefono', field: 'telefono'},
+      {title: 'Fecha nacimiento', field: 'fecha_nacimiento'},
+      {title: 'Interes', field: 'interes'},
+      {title: 'Ocupacion', field: 'ocupacion'},
+      {title: 'Correo', field: 'ocupacion'},
+      {title: 'Correo', field: 'correo' },
+      {title: 'Correo', field: 'clave'},
     ],
-    data: [
-      { name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },
-      { name: 'Zerya Betül',  surname: 'Baran',  birthYear: 2017,  birthCity: 34,},
-      { name: 'Marcelo', surname: 'Baran', birthYear: 1987, birthCity: 63 },
-      { name: 'Juan',  surname: 'Baran',  birthYear: 2017,  birthCity: 34,},
-      { name: 'Roberto', surname: 'Baran', birthYear: 1987, birthCity: 63 },
-    ],
+    // data: [
+    //   { name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },
+    //   { name: 'Zerya Betül',  surname: 'Baran',  birthYear: 2017,  birthCity: 34,},
+    //   { name: 'Marcelo', surname: 'Baran', birthYear: 1987, birthCity: 63 },
+    //   { name: 'Juan',  surname: 'Baran',  birthYear: 2017,  birthCity: 34,},
+    //   { name: 'Roberto', surname: 'Baran', birthYear: 1987, birthCity: 63 },
+    // ],
   });
+
+  const [clientes, setClientes] = useState([]);
+  const {idcliente, dispatch} = useContext(AppContext);
+
+  const getClientes = async() =>{
+    try{
+      axios.get('http://admidgroup.com/api_rest/index.php/api/clientes')
+          .then(response => {
+             
+              setClientes(response.data.clientes)
+             
+            })
+          .catch(error => {
+              console.error('There was an error!', error);
+        });
+    }catch(error){
+      console.error('There was an error two!', error);
+    }
+  }            
+  
+  const changeInputValue = (newValue) => {
+    dispatch({ type: 'MARCELO', data: newValue,});
+};
 
   return (
     <MaterialTable
       title="Clientes"
       columns={state.columns}
       style={{margin:10}}
-      data={state.data}
+      data={clientes}
       editable={{
         onRowAdd: (newData) =>
           new Promise((resolve) => {
@@ -69,9 +101,7 @@ export default function TablaCuota() {
           }),
       }}
       onRowClick={(event, rowData) =>
-        console.log(
-          "Dropped column from " + rowData.name 
-        )
+          changeInputValue(rowData.id_cliente)
       }
       localization={{
         toolbar: {

@@ -5,8 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
-import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -17,6 +16,7 @@ import axios from "axios";
 import {Redirect} from "react-router-dom";
 import useFullPageLoader from './../../hooks/useFullPageLoader';
 import {useHistory} from 'react-router-dom'
+import * as Yup from 'yup';
 
 
 function Copyright() {
@@ -34,11 +34,11 @@ function Copyright() {
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
     display: 'flex',
-    flex:1,
-    flexDirection: 'column',
-    alignItems: 'center',
+    flexDirection:'column',
+    justifyContent: 'center',
+    alignItems:'center',
+    height:'100vh'
   },
   avatar: {
     margin: theme.spacing(1),
@@ -51,11 +51,13 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
     backgroundColor:"#323232",
-    color:"#FFF"
+    color:"#FFF",
+    borderRadius:20
   },
   photo: {
     width: 100,
     height: 100,
+    marginBottom:50
   },
   lottieStyle: {
     width: '340px', margin: 'auto', display: 'block' 
@@ -103,10 +105,10 @@ function SignIn(props) {
          },
         })
           .then(response => {
-             if(response.data.status==true){
+             if(response.data.status===true){
                history.push("/main");
              }else{
-              console.log('Error de login', response.data.status==true);
+             
              }
              hideLoader();
             })
@@ -120,27 +122,38 @@ function SignIn(props) {
   
 
   return (
+    <Formik
+    initialValues={{
+        usuario: '',
+        clave: '',
+    }}
+    validationSchema={Yup.object().shape({
+        usuario: Yup.string()
+            .required('Ingrese su usuario'),
+        clave: Yup.string()
+            .required('Ingrese su clave'),
+    })}
+    onSubmit={fields => {
+        alert('SUCCESS!! :-)\n\n' + JSON.stringify(fields, null, 4))
+    }}
+>
+    {({ errors, status, touched }) => (
+        <Form>
     <>
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       
       <div className={classes.paper}>
          <img src={logo} className={classes.photo} alt="Logo" />
-        <form className={classes.form} noValidate>
-          <CssTextField
-        className={classes.margin}
-        label="Usuario"
-        margin="normal"
-        fullWidth
-        id="custom-css-outlined-input"
-      />
-      <CssTextField
-        className={classes.margin}
-        label="Contraseña"
-        margin="normal"
-        fullWidth
-        id="custom-css-outlined-input"
-      />
+         <div style={{height:40, width:'400', paddingBottom:'70'}}>
+
+         <Field name="usuario" type="text" className={'form-control' + (errors.usuario && touched.usuario ? ' is-invalid' : '')} />         
+         <ErrorMessage name="usuario" component="div" className="invalid-feedback" />
+         </div>
+         <div style={{height:40, width:'400', paddingBottom:'70'}}>
+         <Field name="clave" type="text" className={'form-control' + (errors.clave && touched.clave ? ' is-invalid' : '')} />
+         <ErrorMessage name="clave" component="div" className="invalid-feedback" />
+         </div>
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Recuerdame"
@@ -152,14 +165,14 @@ function SignIn(props) {
             className={classes.submit}>
             Iniciar sesión
           </Button>
-        </form>
+          <Copyright />
       </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
     </Container>
     {loader}
     </>
+    </Form>
+   )}
+   </Formik>
   );
 }
 
