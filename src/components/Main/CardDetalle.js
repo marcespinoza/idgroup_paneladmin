@@ -40,20 +40,7 @@ export default function CardDetalle() {
     }
   };
 
-  const handleUpload = async e => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("file", image.raw);
-    axios.post('http://admidgroup.com/api_rest/index.php/api/subirimagen', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      .then(res => {
-        console.log(res);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
+  
 
 
   return(

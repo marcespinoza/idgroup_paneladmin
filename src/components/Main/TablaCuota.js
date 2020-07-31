@@ -3,22 +3,24 @@ import MaterialTable from 'material-table';
 import {Editar, Eliminar} from './../../utils/Icons.js'
 import axios from "axios";
 import { AppContext } from './../Main/HeaderMain'
+import Add from '@material-ui/icons/Add';
+import Button from '@material-ui/core/Button'
+import AgregarCuotaModal from './../../utils/AgregarCuotaModal'
 
 export default function ClientTable() {  
 
+  const [data, setData] = ([]);
+  const [cuotas, setCuotas] = useState([]);
+  const [modalShow, setModalShow] = useState(false);
   const [state, setState] = React.useState({
     columns: [
-      { title: 'Número', field: 'numero' },
-      { title: 'Fecha', field: 'fecha', type: 'numeric' },
-      {title: 'Monto', field: 'monto',},
-      {title: 'Moneda', field: 'moneda'},
+      { title: 'Número', field: 'numero', width:'50'},
+      { title: 'Fecha', field: 'fecha', type: 'numeric' ,width:'50' },
+      {title: 'Monto', field: 'monto', width:'50',  currencySetting: { 34: "hhh" }, },
+      {title: 'Moneda', field: 'moneda', width:'50' },
     ],
     
   }); 
-
-  const [data, setData] = ([]);
-  const [cuotas, setCuotas] = useState([]);
-
   const {idcliente, dispatch} = useContext(AppContext);
 
     const changeInputValue = (newValue) => {
@@ -26,7 +28,11 @@ export default function ClientTable() {
         dispatch({ type: 'UPDATE_INPUT', data: newValue,});
     };
 
-
+    const checkIfEmpty = () => {
+      if(cuotas.length===0){
+        alert("Selecicone cliente");
+      }
+    };
 
   const getCuotas = async(id_cli) =>{
     try{
@@ -38,12 +44,13 @@ export default function ClientTable() {
          },
         })
           .then(response => {
-            console.log(id_cli.inputText)
              if(response.data.status===true){
                setCuotas(response.data.cuotas)
              }else{
              
              }
+             console.log(response.data.cuotas);
+
             })
           .catch(error => {
               console.error('There was an error!', error);
@@ -54,28 +61,27 @@ export default function ClientTable() {
   }                                     
   
   useEffect(() => {
-    console.log("ESTOY ACTUAIANDO");
     getCuotas(idcliente)
   }, [idcliente]);
 
   return (
+    <div style={{flexDirection:'column', width:'100%'}}>
+    <Button
+    variant="contained"
+    color="default"
+    style={{margin:'10'}}
+    onClick={() => checkIfEmpty()}
+    startIcon={<Add />}>
+    Cuota
+  </Button>
+  <AgregarCuotaModal show={modalShow} onHide={() => setModalShow(false)}/>
     <MaterialTable
       title="Cuotas"
       columns={state.columns}
       data={cuotas}
-      style={{width:'50%', margin:10}}
+      style={{width:'100%', margin:10}}
       editable={{
-        onRowAdd: (newData) =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              setState((prevState) => {
-                const data = [...prevState.data];
-                data.push(newData);
-                return { ...prevState, data };
-              });
-            }, 600);
-          }),
+      
         onRowUpdate: (newData, oldData) =>
           new Promise((resolve) => {
             setTimeout(() => {
@@ -115,10 +121,10 @@ export default function ClientTable() {
       options={{
         pageSize:3,
          headerStyle: {
-        backgroundColor: '#323232',
-        fontFamily:'Roboto',
-        fontWeight: 900,
-        color:'#DCDCDC'
+          backgroundColor: '#323232',
+          fontFamily:'Roboto',
+          fontWeight: 900,
+          color:'#DCDCDC'
       }
       }}
       icons={{ 
@@ -126,5 +132,6 @@ export default function ClientTable() {
         Edit: Editar
       }}
     />
+    </div >
   );
 }
