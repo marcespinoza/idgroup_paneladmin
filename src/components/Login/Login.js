@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function Login(props) {
+function Login() {
 
   const classes = useStyles();
   const [loader, showLoader, hideLoader] = useFullPageLoader();

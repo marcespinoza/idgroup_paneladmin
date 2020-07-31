@@ -76,3 +76,14 @@
   right: 0;
 }
 
+.sliderimg{
+  width: 200px;
+  height: 200px;
+  object-fit: cover
+}
+
+.alice-carousel ul li img{
+  height: 200px;
+  width: 100%;
+  object-fit: cover;
+}

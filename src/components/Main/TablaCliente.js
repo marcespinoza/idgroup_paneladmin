@@ -21,9 +21,7 @@ export default function TablaCuota()  {
       {title: 'Fecha nacimiento', field: 'fecha_nacimiento'},
       {title: 'Interes', field: 'interes'},
       {title: 'Ocupacion', field: 'ocupacion'},
-      {title: 'Correo', field: 'ocupacion'},
-      {title: 'Correo', field: 'correo' },
-      {title: 'Correo', field: 'clave'},
+      {title: 'Correo', field: 'correo'},
     ],
     // data: [
     //   { name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },

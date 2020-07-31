@@ -8,7 +8,9 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import TablaCliente from './TablaCliente';
 import TablaCuota from './TablaCuota';
-import { FormLabel } from '@material-ui/core';
+import CardDetalle from './CardDetalle';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import Popup from './../../utils/Popup'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,9 +27,7 @@ const useStyles = makeStyles((theme) => ({
 export const AppContext = React.createContext();
 
 const initialState = {
-
   inputText: '',
-
 };
 
 function reducer(state, action) {
@@ -48,6 +48,14 @@ export default function ButtonAppBar() {
 
   const classes = useStyles();
   const [cliente, setIdCliente] = useState("");
+  const[showpopup, setShowpopup] = useState(false)
+  const showPopUp = () => {
+    setShowpopup(true);
+  };
+  const closePopUp = () => {
+    console.log('CERRAR POPUP');
+    setShowpopup(false);
+  };
   
 const [idcliente, dispatch] = useReducer(reducer, initialState);
 
@@ -61,12 +69,20 @@ const [idcliente, dispatch] = useReducer(reducer, initialState);
           <Typography variant="h6" className={classes.title}>
             Panel de administración
           </Typography>
-          <Button color="inherit">Cerrar sesión</Button>
+          <IconButton color="primary" aria-label="upload picture" onClick={showPopUp} component="span">
+          <PhotoCamera />
+        </IconButton>
+          <Button color="inherit" >Cerrar sesión</Button>
         </Toolbar>        
       </AppBar>
       <AppContext.Provider value={{ idcliente, dispatch }}>
       <TablaCliente/>
-      <TablaCuota/>
+      <div style={{display:'flex', flexDirection:'row', margin:10}}>
+        <TablaCuota/>
+        <CardDetalle/>
+        {showpopup ?  
+        <Popup closePopUp={closePopUp} showpopup={showpopup} /> : null}
+      </div>
       </AppContext.Provider>
       <div style={{flexDirection:'row'}}>
       </div>
