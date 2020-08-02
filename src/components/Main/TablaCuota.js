@@ -6,16 +6,20 @@ import { AppContext } from './../Main/HeaderMain'
 import Add from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button'
 import AgregarCuotaModal from './../../utils/AgregarCuotaModal'
+import {toast, ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function ClientTable() {  
 
   const [data, setData] = ([]);
   const [cuotas, setCuotas] = useState([]);
+  const [numeroCuota, setNumeroCuota] = useState('');
+  const [variacion, setVariacion] = useState('');
   const [modalShow, setModalShow] = useState(false);
   const [state, setState] = React.useState({
     columns: [
-      { title: 'Número', field: 'numero', width:'50'},
-      { title: 'Fecha', field: 'fecha', type: 'numeric' ,width:'50' },
+      {title: 'Número', field: 'numero', width:'50'},
+      {title: 'Fecha', field: 'fecha', type: 'numeric' ,width:'50' },
       {title: 'Monto', field: 'monto', width:'50',  currencySetting: { 34: "hhh" }, },
       {title: 'Moneda', field: 'moneda', width:'50' },
     ],
@@ -24,13 +28,22 @@ export default function ClientTable() {
   const {idcliente, dispatch} = useContext(AppContext);
 
     const changeInputValue = (newValue) => {
-        console.log("nuevo galor"+newValue);
         dispatch({ type: 'UPDATE_INPUT', data: newValue,});
     };
 
+
     const checkIfEmpty = () => {
       if(cuotas.length===0){
-        alert("Selecicone cliente");
+        toast.error('Seleccione un cliente antes de agregar una cuota', {
+          position: "bottom-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          });
+      }else{
+        setModalShow(true)
       }
     };
 
@@ -49,8 +62,8 @@ export default function ClientTable() {
              }else{
              
              }
-             console.log(response.data.cuotas);
-
+              setNumeroCuota(response.data.cuotas[0].total);
+              setVariacion(response.data.cuotas[0].variacion)
             })
           .catch(error => {
               console.error('There was an error!', error);
@@ -74,7 +87,8 @@ export default function ClientTable() {
     startIcon={<Add />}>
     Cuota
   </Button>
-  <AgregarCuotaModal show={modalShow} onHide={() => setModalShow(false)}/>
+  <ToastContainer/> 
+  <AgregarCuotaModal numerocuota={numeroCuota} variacion={variacion} show={modalShow} onHide={() => setModalShow(false)}/>
     <MaterialTable
       title="Cuotas"
       columns={state.columns}
