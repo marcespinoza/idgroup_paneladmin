@@ -51,7 +51,7 @@ export default function TablaCuota()  {
     }
   }            
   
-  const changeInputValue = (newValue) => {
+  const changeInputValue = (newValue) => {console.log("valor"+newValue);
     dispatch({ type: 'MARCELO', data: newValue,});
 };
 

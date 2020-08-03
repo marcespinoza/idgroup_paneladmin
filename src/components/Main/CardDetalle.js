@@ -1,8 +1,6 @@
 import React, {useEffect, useContext, useState} from 'react';
-import Card from '@material-ui/core/Card';
 import ImageUploader from "react-images-upload";
 import { makeStyles } from '@material-ui/core/styles';
-import {Row, Col, Container} from 'react-bootstrap'
 import ImageVariacion from './../Main/ImagenVariacion'
 import axios from "axios";
 
@@ -45,24 +43,7 @@ export default function CardDetalle() {
 
   return(
       <div style={{width:'50%', margin:'10'}}>
-        <Card>
-  <Row style={{backgroundColor:'#20b1e8'}}>
-    <Col className={classes.itemcard}>UBICACION </Col>
-    <Col className={classes.itemcard}>UNIDAD </Col>
-    <Col className={classes.itemcard}>DORMITORIOS </Col>
-    <Col className={classes.itemcard}>M2 PROPIOS </Col>
-    <Col className={classes.itemcard}>M2 COMUNES </Col>
-    <Col className={classes.itemcard}>TOTAL M2 </Col>
-  </Row>
-  <Row >
-    <Col className={classes.itemcard}>2 </Col>
-    <Col className={classes.itemcard}>202 </Col>
-    <Col className={classes.itemcard}>2</Col>
-    <Col className={classes.itemcard}>0</Col>
-    <Col className={classes.itemcard}>0 </Col>
-    <Col className={classes.itemcard}>99.42</Col>
-  </Row>
-  </Card>
+  
   <ImageVariacion/>
   </div>
   );

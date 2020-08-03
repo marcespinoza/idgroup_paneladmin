@@ -2,20 +2,42 @@ import React, {useEffect, useContext, useState} from 'react';
 import MaterialTable from 'material-table';
 import {Editar, Eliminar} from './../../utils/Icons.js'
 import axios from "axios";
+import { makeStyles } from '@material-ui/core/styles';
 import { AppContext } from './../Main/HeaderMain'
 import Add from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button'
 import AgregarCuotaModal from './../../utils/AgregarCuotaModal'
 import {toast, ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import {Row, Col, Container} from 'react-bootstrap'
+import Card from '@material-ui/core/Card';
+
+const useStyles = makeStyles((theme) => ({
+  cardrow: {
+    flex:1,
+    flexDirection:'column'
+  },
+  itemcardtitle:{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',        
+  },
+  itemcard:{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+  }
+}));
 
 export default function ClientTable() {  
 
+  const classes = useStyles();
   const [data, setData] = ([]);
   const [cuotas, setCuotas] = useState([]);
   const [numeroCuota, setNumeroCuota] = useState('');
   const [variacion, setVariacion] = useState('');
   const [modalShow, setModalShow] = useState(false);
+  const [unidad, setUnidad]= useState({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
   const [state, setState] = React.useState({
     columns: [
       {title: 'Número', field: 'numero', width:'50'},
@@ -26,17 +48,17 @@ export default function ClientTable() {
     
   }); 
   const {idcliente, dispatch} = useContext(AppContext);
-
+  
     const changeInputValue = (newValue) => {
         dispatch({ type: 'UPDATE_INPUT', data: newValue,});
     };
 
-
+    
     const checkIfEmpty = () => {
       if(cuotas.length===0){
         toast.error('Seleccione un cliente antes de agregar una cuota', {
           position: "bottom-center",
-          autoClose: 2000,
+          autoClose: 3000,
           hideProgressBar: true,
           closeOnClick: true,
           pauseOnHover: true,
@@ -47,30 +69,58 @@ export default function ClientTable() {
       }
     };
 
-  const getCuotas = async(id_cli) =>{
-    try{
-      axios.post('http://admidgroup.com/api_rest/index.php/api/cuotasporcliente', {
-        idcliente: id_cli.inputText,
+    let unidadfuncional = "http://admidgroup.com/api_rest/index.php/api/unidadporcliente";
+    let cuota = "http://admidgroup.com/api_rest/index.php/api/cuotasporcliente";
+    
+    var config = {
+      idcliente: idcliente.inputText,
         headers: {
           'Access-Control-Allow-Origin': '*',
           "Access-Control-Allow-Headers":"X-Requested-With"
-         },
-        })
-          .then(response => {
-             if(response.data.status===true){
-               setCuotas(response.data.cuotas)
-             }else{
+         },}
+    
+  const requestOne = axios.post(unidadfuncional, config);
+  const requestTwo = axios.post(cuota, config);
+  
+
+  const getCuotas = async(id_cli) =>{
+    setUnidad({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
+    setCuotas([]);
+    axios.all([requestOne, requestTwo])
+  .then(
+    axios.spread((...responses) => {
+      setUnidad(responses[0].data.unidad[0])
+      setCuotas(responses[1].data.cuotas);
+      console.log(responses[1].data.cuotas)
+    })
+  )
+  .catch(errors => {
+    // react on errors.
+    console.error("ERRORES "+errors);
+  });
+    // try{
+    //   axios.all('http://admidgroup.com/api_rest/index.php/api/cuotasporcliente', {
+    //     idcliente: id_cli.inputText,
+    //     headers: {
+    //       'Access-Control-Allow-Origin': '*',
+    //       "Access-Control-Allow-Headers":"X-Requested-With"
+    //      },
+    //     })
+    //       .then(response => {
+    //          if(response.data.status===true){
+    //            setCuotas(response.data.cuotas)
+    //          }else{
              
-             }
-              setNumeroCuota(response.data.cuotas[0].total);
-              setVariacion(response.data.cuotas[0].variacion)
-            })
-          .catch(error => {
-              console.error('There was an error!', error);
-        });
-    }catch(error){
-      console.error('There was an error two!', error);
-    }
+    //          }
+    //           setNumeroCuota(response.data.cuotas[0].total);
+    //           setVariacion(response.data.cuotas[0].variacion)
+    //         })
+    //       .catch(error => {
+    //           console.error('There was an error!', error);
+    //     });
+    // }catch(error){
+    //   console.error('There was an error two!', error);
+    // }
   }                                     
   
   useEffect(() => {
@@ -81,14 +131,35 @@ export default function ClientTable() {
     <div style={{flexDirection:'column', width:'100%'}}>
     <Button
     variant="contained"
-    color="default"
-    style={{margin:'10'}}
+    color="primary"
+    style={{
+      backgroundColor: "#20b1e8",
+      margin:'10',
+    }}
     onClick={() => checkIfEmpty()}
     startIcon={<Add />}>
     Cuota
   </Button>
   <ToastContainer/> 
   <AgregarCuotaModal numerocuota={numeroCuota} variacion={variacion} show={modalShow} onHide={() => setModalShow(false)}/>
+  <Card style={{margin:10}}>
+  <Row style={{backgroundColor:'#20b1e8'}}>
+    <Col className={classes.itemcard}>UBICACION </Col>
+    <Col className={classes.itemcard}>UNIDAD </Col>
+    <Col className={classes.itemcard}>DORMITORIOS </Col>
+    <Col className={classes.itemcard}>M2 PROPIOS </Col>
+    <Col className={classes.itemcard}>M2 COMUNES </Col>
+    <Col className={classes.itemcard}>TOTAL M2 </Col>
+  </Row>
+  <Row >
+  <Col className={classes.itemcard}>{unidad.ubicacion}</Col>
+    <Col className={classes.itemcard}>{unidad.unidad}</Col>
+    <Col className={classes.itemcard}>{unidad.dormitorios}</Col>
+    <Col className={classes.itemcard}>{unidad.m2_propios}</Col>
+    <Col className={classes.itemcard}>{unidad.m2_comunes}</Col>
+    <Col className={classes.itemcard}>{unidad.total_m2}</Col>
+  </Row>
+  </Card>
     <MaterialTable
       title="Cuotas"
       columns={state.columns}

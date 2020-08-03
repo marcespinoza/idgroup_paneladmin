@@ -20,7 +20,7 @@ export default function AgregarCuota(props) {
 
  const classes = useStyles();
  const [fecha, setFecha] = useState(moment().format("YYYY-MM-DD"));
-
+ const [monto, setMonto] = useState('150');
 
  const agregarCuota = async(id_cli) =>{
     try{
@@ -28,7 +28,7 @@ export default function AgregarCuota(props) {
         idcliente: "79",
         fecha: "2020-02-02",
         nrocuota: "6",
-        monto: "12.500",
+        monto: monto,
         moneda: "1",
         variacion_mensual: "12.5",
         headers: {
@@ -70,7 +70,7 @@ export default function AgregarCuota(props) {
                  </div>
                  <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Monto</InputLabel>
-                 <Input/>
+                 <Input value={monto} onChange={(evt) => { setMonto(evt.target.value); }}/>
                  </div>
                  <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Fecha</InputLabel>
