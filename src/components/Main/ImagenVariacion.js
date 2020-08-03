@@ -31,12 +31,12 @@ const useStyles = makeStyles((theme) => ({
 
 const tileData = [
        {
-         img: 'http://admidgroup.com/variacion_mensual/variacionjulio.png',
+         img: 'http://admidgroup.com/api_rest/imagenes_variacion_mensual/Captura.JPG',
         title: 'Image',
          author: 'author',
        },
        {
-        img: 'http://admidgroup.com/variacion_mensual/variacionjunio.png',
+        img: 'http://admidgroup.com/api_rest/imagenes_variacion_mensual/Captura.JPG',
        title: 'Image',
         author: 'author',
       },
