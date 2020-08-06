@@ -5,6 +5,8 @@ import { InputLabel } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from "axios";
 import moment from "moment";
+import ButtonLoader from './../utils/ButtonLoader'
+
 
 const useStyles = makeStyles((theme) => ({
     input: {
@@ -20,13 +22,17 @@ export default function AgregarCuota(props) {
 
  const classes = useStyles();
  const [fecha, setFecha] = useState(moment().format("YYYY-MM-DD"));
- const [monto, setMonto] = useState('150');
+ const [monto, setMonto] = useState('');
+ const [idcli, setIdCli] = useState(0);
+ const [buttonState, setState] = useState('');
+ const [loading, setLoading] = useState(false);
 
  const agregarCuota = async(id_cli) =>{
+   setLoading(true);
     try{
       axios.post('http://admidgroup.com/api_rest/index.php/api/agregarcuota', {
-        idcliente: "79",
-        fecha: "2020-02-02",
+        idcliente: props.idcliente,
+        fecha: fecha,
         nrocuota: "6",
         monto: monto,
         moneda: "1",
@@ -38,12 +44,14 @@ export default function AgregarCuota(props) {
         })
        .then(response => {
           if(response.data.status===true){
+              
              }else{
-             
              }
              console.log(response.data.cuotas);
+             setLoading(false);
 
-            })
+            }
+            )
         .catch(error => {
               console.error('There was an error!', error);
         });
@@ -69,8 +77,12 @@ export default function AgregarCuota(props) {
                  <Input value={props.numerocuota}/>
                  </div>
                  <div className={classes.input}>
+                 <InputLabel htmlFor="input-with-icon-adornment">Moneda</InputLabel>
+                 <Input value= {props.moneda == '0'? '$$': '$' } onChange={(evt) => {setMonto(evt.target.value); }}/>
+                 </div>
+                 <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Monto</InputLabel>
-                 <Input value={monto} onChange={(evt) => { setMonto(evt.target.value); }}/>
+                 <Input value={monto} onChange={(evt) => {setMonto(evt.target.value); }}/>
                  </div>
                  <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Fecha</InputLabel>
@@ -83,8 +95,15 @@ export default function AgregarCuota(props) {
              </div>
              </Modal.Body>
             <Modal.Footer>
-          {/* <Button onClick={props.onHide}>Guardar</Button> */}
-          <Button onClick={agregarCuota}>Guardar</Button>
+           <button className="button" onClick={agregarCuota} disabled={loading}>
+            {loading && (
+             <i
+              className="fa fa-refresh fa-spin"
+              style={{ marginRight: "5px" }}/>
+            )}
+            {loading && <span>ENVIANDO</span>}
+            {!loading && <span>GUARDAR</span>}
+            </button>
         </Modal.Footer>
       </Modal>
     );

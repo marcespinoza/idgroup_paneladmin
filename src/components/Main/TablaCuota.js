@@ -20,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
   itemcardtitle:{
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',        
+      justifyContent: 'center',     
+      fontFamily:'roboto_black'   
   },
   itemcard:{
       display: 'flex',
@@ -36,6 +37,7 @@ export default function ClientTable() {
   const [cuotas, setCuotas] = useState([]);
   const [numeroCuota, setNumeroCuota] = useState('');
   const [variacion, setVariacion] = useState('');
+  const [moneda, setMoneda] = useState('');
   const [modalShow, setModalShow] = useState(false);
   const [unidad, setUnidad]= useState({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
   const [state, setState] = React.useState({
@@ -55,7 +57,7 @@ export default function ClientTable() {
 
     
     const checkIfEmpty = () => {
-      if(cuotas.length===0){
+      if(cuotas.length===0 && idcliente.inputText===''){
         toast.error('Seleccione un cliente antes de agregar una cuota', {
           position: "bottom-center",
           autoClose: 3000,
@@ -90,8 +92,10 @@ export default function ClientTable() {
   .then(
     axios.spread((...responses) => {
       setUnidad(responses[0].data.unidad[0])
-      setCuotas(responses[1].data.cuotas);
-      console.log(responses[1].data.cuotas)
+      setCuotas(responses[1].data.cuotas)    
+      setNumeroCuota(parseInt(responses[1].data.cuotas[0].total)+1);
+      setVariacion(responses[1].data.cuotas[0].variacion);
+      setMoneda(responses[1].data.cuotas[0].moneda)
     })
   )
   .catch(errors => {
@@ -129,57 +133,23 @@ export default function ClientTable() {
 
   return (
     <div style={{flexDirection:'column', width:'100%'}}>
-    <Button
-    variant="contained"
-    color="primary"
-    style={{
-      backgroundColor: "#20b1e8",
-      margin:'10',
-    }}
-    onClick={() => checkIfEmpty()}
-    startIcon={<Add />}>
-    Cuota
-  </Button>
+  
   <ToastContainer/> 
-  <AgregarCuotaModal numerocuota={numeroCuota} variacion={variacion} show={modalShow} onHide={() => setModalShow(false)}/>
-  <Card style={{margin:10}}>
-  <Row style={{backgroundColor:'#20b1e8'}}>
-    <Col className={classes.itemcard}>UBICACION </Col>
-    <Col className={classes.itemcard}>UNIDAD </Col>
-    <Col className={classes.itemcard}>DORMITORIOS </Col>
-    <Col className={classes.itemcard}>M2 PROPIOS </Col>
-    <Col className={classes.itemcard}>M2 COMUNES </Col>
-    <Col className={classes.itemcard}>TOTAL M2 </Col>
-  </Row>
-  <Row >
-  <Col className={classes.itemcard}>{unidad.ubicacion}</Col>
-    <Col className={classes.itemcard}>{unidad.unidad}</Col>
-    <Col className={classes.itemcard}>{unidad.dormitorios}</Col>
-    <Col className={classes.itemcard}>{unidad.m2_propios}</Col>
-    <Col className={classes.itemcard}>{unidad.m2_comunes}</Col>
-    <Col className={classes.itemcard}>{unidad.total_m2}</Col>
-  </Row>
-  </Card>
-    <MaterialTable
+  <AgregarCuotaModal idcliente={idcliente.inputText} numerocuota={numeroCuota} moneda={moneda} variacion={variacion} show={modalShow} onHide={() => setModalShow(false)}/>
+  <MaterialTable
       title="Cuotas"
       columns={state.columns}
       data={cuotas}
-      style={{width:'100%', margin:10}}
-      editable={{
-      
-        onRowUpdate: (newData, oldData) =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              if (oldData) {
-                setState((prevState) => {
-                  const data = [...prevState.data];
-                  data[data.indexOf(oldData)] = newData;
-                  return { ...prevState, data };
-                });
-              }
-            }, 600);
-          }),
+      style={{ margin:10}}
+      actions={[
+        {
+          icon: 'add',
+          tooltip: 'Add User',
+          isFreeAction: true,
+          onClick: (event) => alert("You want to add a new row")
+        }
+      ]}
+        editable={{  
         onRowDelete: (oldData) =>
           new Promise((resolve) => {
             setTimeout(() => {
@@ -201,7 +171,14 @@ export default function ClientTable() {
         pagination: {
           labelRowsSelect:'filas',
           labelDisplayedRows:	'{from}-{to} de {count}'
-                },        
+         },     
+         header : {
+          actions: ''
+       },    
+       body:{
+        emptyDataSourceMessage:"No hay registros para mostrar",
+
+       }
       }}
       options={{
         pageSize:3,
@@ -214,9 +191,37 @@ export default function ClientTable() {
       }}
       icons={{ 
         Delete: Eliminar,
-        Edit: Editar
       }}
     />
+     <Card border="dark"  style={{margin:10}}>
+  <Row style={{backgroundColor:'#20b1e8'}}>
+    <Col className={classes.itemcardtitle}>UBICACION </Col>
+    <Col className={classes.itemcardtitle}>UNIDAD </Col>
+    <Col className={classes.itemcardtitle}>DORMITORIOS </Col>
+    <Col className={classes.itemcardtitle}>M2 PROPIOS </Col>
+    <Col className={classes.itemcardtitle}>M2 COMUNES </Col>
+    <Col className={classes.itemcardtitle}>TOTAL M2 </Col>
+  </Row>
+  <Row >
+    <Col className={classes.itemcard}>{unidad.ubicacion}</Col>
+    <Col className={classes.itemcard}>{unidad.unidad}</Col>
+    <Col className={classes.itemcard}>{unidad.dormitorios}</Col>
+    <Col className={classes.itemcard}>{unidad.m2_propios}</Col>
+    <Col className={classes.itemcard}>{unidad.m2_comunes}</Col>
+    <Col className={classes.itemcard}>{unidad.total_m2}</Col>
+  </Row>
+  </Card>
+    <Button
+    variant="contained"
+    color="primary"
+    style={{
+      backgroundColor: "#20b1e8",
+      margin:'10',
+    }}
+    onClick={() => checkIfEmpty()}
+    startIcon={<Add />}>
+    Cuota
+  </Button>
     </div >
   );
 }

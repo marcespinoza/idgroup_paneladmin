@@ -12,10 +12,10 @@ export default function TablaCuota()  {
 
   const [state, setState] = React.useState({
     columns: [
-      { title: 'IdCliente', field: 'id_cliente', hidden:true },
-      { title: 'Apellido', field: 'apellido' },
-      { title: 'Nombre', field: 'nombre' },
-      { title: 'Documento', field: 'documento', type: 'numeric' },
+      {title: 'IdCliente', field: 'id_cliente', hidden:true },
+      {title: 'Apellido', field: 'apellido' },
+      {title: 'Nombre', field: 'nombre' },
+      {title: 'Documento', field: 'documento', type: 'numeric' },
       {title: 'Direccion', field: 'direccion',lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' }, },
       {title: 'Telefono', field: 'telefono'},
       {title: 'Fecha nacimiento', field: 'fecha_nacimiento'},
@@ -108,7 +108,10 @@ export default function TablaCuota()  {
         pagination: {
           labelRowsSelect:'filas',
           labelDisplayedRows:	'{from}-{to} de {count}'
-                },        
+        },
+        body:{
+          emptyDataSourceMessage:"No hay registros para mostrar",  
+         }        
       }}
       options={{
         pageSize:3,

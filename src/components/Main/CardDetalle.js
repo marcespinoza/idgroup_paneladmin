@@ -38,14 +38,10 @@ export default function CardDetalle() {
     }
   };
 
-  
-
 
   return(
-      <div style={{width:'50%', margin:'10'}}>
   
   <ImageVariacion/>
-  </div>
   );
 
   

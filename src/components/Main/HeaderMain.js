@@ -11,6 +11,8 @@ import TablaCuota from './TablaCuota';
 import CardDetalle from './CardDetalle';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import Popup from './../../utils/Popup'
+import ImagenVariacion from './../Main/ImagenVariacion'
+import TablaVariacion from './../Main/TablaVariacion'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -77,15 +79,19 @@ const [idcliente, dispatch] = useReducer(reducer, initialState);
       </AppBar>
       <AppContext.Provider value={{ idcliente, dispatch }}>
       <TablaCliente/>
-      <div style={{display:'flex', flexDirection:'row', margin:10}}>
+      <div style={{display:'flex', flex:'1',flexDirection:'row'}}>
+        <div style={{width:'50%'}}>
         <TablaCuota/>
-        <CardDetalle/>
+        </div>
+        <div style={{width:'50%'}}>
+        <TablaVariacion/>
+        <ImagenVariacion/>        
+        </div>
         {showpopup ?  
         <Popup closePopUp={closePopUp} showpopup={showpopup} /> : null}
       </div>
       </AppContext.Provider>
-      <div style={{flexDirection:'row'}}>
-      </div>
+     
     </div>
   );
 }

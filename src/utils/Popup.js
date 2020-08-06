@@ -7,11 +7,12 @@ import useFullPageLoader from './../hooks/useFullPageLoader';
 import {toast, ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
+
 function Popup(props) {  
 
     const { showpopup, closePopUp } = props;
     const[porcentaje, setPorcentaje] = useState(0);
-    let toastId = null;
+    let toastId;
 
     const [loader, showLoader, hideLoader] = useFullPageLoader();
     const config = {
@@ -33,6 +34,7 @@ function Popup(props) {
   
     function handleUpload(file){
       const formData = new FormData();
+      toastId = null;
       formData.append("file", file[0]);
       axios.request({
         method: "post", 
@@ -43,16 +45,18 @@ function Popup(props) {
   
           // check if we already displayed a toast
           if(toastId === null){
-              toastId = toast('Upload in Progress', {
+              toastId = toast('Subiendo imagen', {
               progress: progress,
               type: toast.TYPE.INFO,
-                autoClose: false
+              position: "bottom-center",
+              autoClose: false
             });
           } else {
             toast.update(toastId, {
               progress: progress,
               type: toast.TYPE.INFO,
-                autoClose: false
+              position: "bottom-center",
+              autoClose: false
             })
           }
         }
@@ -62,6 +66,15 @@ function Popup(props) {
         // The toast will be closed when the transition end
         toast.done(toastId);
         closePopUp();
+        toast.success('Subido correctamente', {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
       })
     }
   
@@ -82,7 +95,7 @@ function Popup(props) {
   
 return (  
 <div>         
-<ToastContainer/> 
+<ToastContainer/>
     <DropzoneDialog
         open={showpopup}
         acceptedFiles={['image/jpeg', 'image/png', 'image/bmp']}
