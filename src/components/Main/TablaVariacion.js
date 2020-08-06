@@ -21,7 +21,7 @@ export default function TablaVariacion()  {
       {title: 'Variacion', field: 'valor'},
       {title: 'Mes', field: 'mes',  lookup: { 1: "ENERO", 2: "FEBRERO", 3: "MARZO" , 4: "ABRIL", 5: "MAYO", 6: "JUNIO" , 7: "JULIO"
       , 8: "AGOSTO", 9: "SEPTIEMBRE", 10: "OCTUBRE", 11: "NOVIEMBRE", 12: "DICIEMBRE"}},
-      {title: 'Año', field: 'anio',lookup: { 1: "2020", 2: "2021", 3:"2022",4:"2023"} },
+      {title: 'Año', field: 'anio',lookup: { 1: "2020", 2: "2021", 3:"2022",4:"2023", 5:"2024", 6:"2025"} },
     ],
   });
 

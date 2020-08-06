@@ -73,6 +73,7 @@ export default function ClientTable() {
 
     let unidadfuncional = "http://admidgroup.com/api_rest/index.php/api/unidadporcliente";
     let cuota = "http://admidgroup.com/api_rest/index.php/api/cuotasporcliente";
+    let variacionmensual = "http://admidgroup.com/api_rest/index.php/api/variacion";
     
     var config = {
       idcliente: idcliente.inputText,
@@ -83,18 +84,19 @@ export default function ClientTable() {
     
   const requestOne = axios.post(unidadfuncional, config);
   const requestTwo = axios.post(cuota, config);
+  const requestThree = axios.get(variacionmensual);
   
 
   const getCuotas = async(id_cli) =>{
     setUnidad({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
     setCuotas([]);
-    axios.all([requestOne, requestTwo])
+    axios.all([requestOne, requestTwo, requestThree])
   .then(
     axios.spread((...responses) => {
       setUnidad(responses[0].data.unidad[0])
       setCuotas(responses[1].data.cuotas)    
       setNumeroCuota(parseInt(responses[1].data.cuotas[0].total)+1);
-      setVariacion(responses[1].data.cuotas[0].variacion);
+      setVariacion(responses[2].data.variaciones[0].valor);
       setMoneda(responses[1].data.cuotas[0].moneda)
     })
   )
@@ -102,29 +104,6 @@ export default function ClientTable() {
     // react on errors.
     console.error("ERRORES "+errors);
   });
-    // try{
-    //   axios.all('http://admidgroup.com/api_rest/index.php/api/cuotasporcliente', {
-    //     idcliente: id_cli.inputText,
-    //     headers: {
-    //       'Access-Control-Allow-Origin': '*',
-    //       "Access-Control-Allow-Headers":"X-Requested-With"
-    //      },
-    //     })
-    //       .then(response => {
-    //          if(response.data.status===true){
-    //            setCuotas(response.data.cuotas)
-    //          }else{
-             
-    //          }
-    //           setNumeroCuota(response.data.cuotas[0].total);
-    //           setVariacion(response.data.cuotas[0].variacion)
-    //         })
-    //       .catch(error => {
-    //           console.error('There was an error!', error);
-    //     });
-    // }catch(error){
-    //   console.error('There was an error two!', error);
-    // }
   }                                     
   
   useEffect(() => {
