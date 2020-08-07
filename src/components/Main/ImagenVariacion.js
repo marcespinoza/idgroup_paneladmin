@@ -1,12 +1,12 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-import GridListTileBar from '@material-ui/core/GridListTileBar';
-import IconButton from '@material-ui/core/IconButton';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
-import SimpleImageSlider from "react-simple-image-slider";
+import AwesomeSlider from 'react-awesome-slider';
+import 'react-awesome-slider/dist/custom-animations/cube-animation.css';
+import 'react-awesome-slider/dist/styles.css';
+import './../../App.css'
 
+
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,36 +30,44 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const tileData = [
-       
-      {
-        img: 'http://admidgroup.com/api_rest/imagenes_variacion_mensual/variacionmayo.png',
-       title: 'Image',
-        author: 'author',
-      },
-      {
-        img: 'http://admidgroup.com/api_rest/imagenes_variacion_mensual/variacionabril.png',
-       title: 'Image',
-        author: 'author',
-      },
-     ];
-
      const images = [
-      { url: "http://admidgroup.com/api_rest/imagenes_variacion_mensual/variacionabril.png" },
-      { url: "http://admidgroup.com/api_rest/imagenes_variacion_mensual/variacionabril.png" },
-      { url: "http://admidgroup.com/api_rest/imagenes_variacion_mensual/variacionabril.png" },
+      { source: "http://admidgroup.com/api_rest/imagenes_variacion_mensual/variacionabril.png" },
+      { source: "http://admidgroup.com/api_rest/imagenes_variacion_mensual/variacionabril.png" },
+      { source: "http://admidgroup.com/api_rest/imagenes_variacion_mensual/variacionmayo.png" },
   ];
 export default function SingleLineGridList() {
 
   const classes = useStyles();
+  var imagen = [];
+  const [imagenes, setImagenes] = useState([]);
+
+  const getVariacionimagenes = async() =>{
+    try{
+      axios.get('http://admidgroup.com/api_rest/index.php/api/getimages')
+          .then(response => {             
+                
+                Object.keys(response.data.variaciones).forEach(key => imagen.push({source: response.data.variaciones[key]}))
+                setImagenes(imagen)
+                console.log(imagen)
+            })
+          .catch(error => {
+              console.error('There was an error!', error);
+        });
+    }catch(error){
+      console.error('There was an error two!', error);
+    }
+  }  
+  
+
+  useEffect(() => {
+    if(imagen!=imagenes){
+    getVariacionimagenes()}
+  },[]);  
 
   return (
     <div>
-    <SimpleImageSlider
-        width={500}
-        height={250}
-        images={images}
-    />
+     <AwesomeSlider style={{width:'45%', height:'30%'}} media={imagenes} >
+  </AwesomeSlider>
 </div>
   );
 }

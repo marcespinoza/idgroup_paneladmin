@@ -17,6 +17,7 @@
     "mdbreact": "^4.27.0",
     "react": "^16.13.1",
     "react-alice-carousel": "^1.19.3",
+    "react-awesome-slider": "^4.1.0",
     "react-bootstrap": "^1.3.0",
     "react-dom": "^16.13.1",
     "react-feather": "^2.0.8",
