@@ -33,7 +33,7 @@ export default function AgregarCuota(props) {
       axios.post('http://admidgroup.com/api_rest/index.php/api/agregarcuota', {
         idcliente: props.idcliente,
         fecha: fecha,
-        nrocuota: "6",
+        nrocuota: props.numerocuota,
         monto: monto,
         moneda: "1",
         variacion_mensual: "12.5",
@@ -43,13 +43,13 @@ export default function AgregarCuota(props) {
          },
         })
        .then(response => {
-          if(response.data.status===true){
-              
+        console.log(response.data.status);
+          if(response.data.status){
+               props.onHide()
+               console.log(response.data.status);
              }else{
              }
-             console.log(response.data.cuotas);
              setLoading(false);
-
             }
             )
         .catch(error => {

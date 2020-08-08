@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {Row, Col, Container} from 'react-bootstrap'
 import Card from '@material-ui/core/Card';
 
+
 const useStyles = makeStyles((theme) => ({
   cardrow: {
     flex:1,
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ClientTable() {  
 
   const classes = useStyles();
-  const [data, setData] = ([]);
+  const [loader, setLoader] = useState(false);
   const [cuotas, setCuotas] = useState([]);
   const [numeroCuota, setNumeroCuota] = useState('');
   const [variacion, setVariacion] = useState('');
@@ -82,12 +83,13 @@ export default function ClientTable() {
           "Access-Control-Allow-Headers":"X-Requested-With"
          },}
     
-  const requestOne = axios.post(unidadfuncional, config);
-  const requestTwo = axios.post(cuota, config);
-  const requestThree = axios.get(variacionmensual);
+    const requestOne = axios.post(unidadfuncional, config);
+    const requestTwo = axios.post(cuota, config);
+    const requestThree = axios.get(variacionmensual);
   
 
   const getCuotas = async(id_cli) =>{
+    setLoader(true);
     setUnidad({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
     setCuotas([]);
     axios.all([requestOne, requestTwo, requestThree])
@@ -98,10 +100,11 @@ export default function ClientTable() {
       setNumeroCuota(parseInt(responses[1].data.cuotas[0].total)+1);
       setVariacion(responses[2].data.variaciones[0].valor);
       setMoneda(responses[1].data.cuotas[0].moneda)
+      setLoader(false);
     })
   )
   .catch(errors => {
-    // react on errors.
+    setLoader(false);
     console.error("ERRORES "+errors);
   });
   }                                     
@@ -111,23 +114,15 @@ export default function ClientTable() {
   }, [idcliente]);
 
   return (
-    <div style={{flexDirection:'column', width:'100%'}}>
-  
+  <div style={{flexDirection:'column', width:'100%'}}>  
   <ToastContainer/> 
   <AgregarCuotaModal idcliente={idcliente.inputText} numerocuota={numeroCuota} moneda={moneda} variacion={variacion} show={modalShow} onHide={() => setModalShow(false)}/>
   <MaterialTable
       title="Cuotas"
       columns={state.columns}
       data={cuotas}
+      isLoading={loader}
       style={{ margin:10}}
-      actions={[
-        {
-          icon: 'add',
-          tooltip: 'Add User',
-          isFreeAction: true,
-          onClick: (event) => alert("You want to add a new row")
-        }
-      ]}
         editable={{  
         onRowDelete: (oldData) =>
           new Promise((resolve) => {
@@ -172,7 +167,8 @@ export default function ClientTable() {
         Delete: Eliminar,
       }}
     />
-     <Card border="dark"  style={{margin:10}}>
+      {loader}
+  <Card border="dark" style={{margin:10}}>
   <Row style={{backgroundColor:'#20b1e8'}}>
     <Col className={classes.itemcardtitle}>UBICACION </Col>
     <Col className={classes.itemcardtitle}>UNIDAD </Col>

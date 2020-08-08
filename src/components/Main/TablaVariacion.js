@@ -7,6 +7,7 @@ import { AppContext } from './../Main/HeaderMain'
 export default function TablaVariacion()  { 
 
   const [variacion, setVariacion] = useState([]);
+  const [loader, setLoader]=useState(false);
   const ref = useRef();
 
   useEffect(() => {
@@ -27,14 +28,16 @@ export default function TablaVariacion()  {
 
 
   const getVariacion = async() =>{
+    setLoader(true);
     try{
       axios.get('http://admidgroup.com/api_rest/index.php/api/variacion')
           .then(response => {
               setVariacion(response.data.variaciones)
-             
+              setLoader(false);
             })
           .catch(error => {
               console.error('There was an error!', error);
+              setLoader(false);
         });
     }catch(error){
       console.error('There was an error two!', error);
@@ -109,6 +112,7 @@ export default function TablaVariacion()  {
       columns={state.columns}
       style={{margin:10}}
       data={variacion}
+      isLoading={loader}
       editable={{
         onRowAdd: (newData) =>
         new Promise((resolve) => {
@@ -141,7 +145,11 @@ export default function TablaVariacion()  {
           labelDisplayedRows:	'{from}-{to} de {count}'
         },
         body:{
-            emptyDataSourceMessage:"No hay registros para mostrar",    
+            emptyDataSourceMessage:"No hay registros para mostrar",   
+            editRow:{
+              deleteText:"Seguro que desea eliminar?"
+            }, 
+            addTooltip:"Agregar variación"
         }        
       }}
       options={{
