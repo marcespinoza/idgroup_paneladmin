@@ -7,6 +7,7 @@ import { AppContext } from './../Main/HeaderMain'
 import Add from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button'
 import AgregarCuotaModal from './../../utils/AgregarCuotaModal'
+import AgregarUnidadModal from '../../utils/AgregarUnidadModal'
 import {toast, ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import {Row, Col, Container} from 'react-bootstrap'
@@ -40,24 +41,31 @@ export default function ClientTable() {
   const [variacion, setVariacion] = useState('');
   const [moneda, setMoneda] = useState('');
   const [modalShow, setModalShow] = useState(false);
+  const [modalUnidadShow, setModalUnidadShow] = useState(false);
   const [unidad, setUnidad]= useState({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
+  const [age, setAge] = React.useState('');
+  const {idcliente, dispatch} = useContext(AppContext);
+  const handleChange = (event) => {
+    setAge(event.target.value);
+  };
   const [state, setState] = React.useState({
     columns: [
+      {title: 'IdCuota', field: 'id_cuota', hidden:true},
       {title: 'Número', field: 'numero', width:'50'},
       {title: 'Fecha', field: 'fecha', type: 'numeric' ,width:'50' },
-      {title: 'Monto', field: 'monto', width:'50',  currencySetting: { 34: "hhh" }, },
+      {title: 'Monto', field: 'monto', width:'50',  },
       {title: 'Moneda', field: 'moneda', width:'50' },
     ],
     
   }); 
-  const {idcliente, dispatch} = useContext(AppContext);
   
     const changeInputValue = (newValue) => {
         dispatch({ type: 'UPDATE_INPUT', data: newValue,});
     };
 
     
-    const checkIfEmpty = () => {
+    const checkIfEmpty = (e, param) => {
+      console.log(param)
       if(cuotas.length===0 && idcliente.inputText===''){
         toast.error('Seleccione un cliente antes de agregar una cuota', {
           position: "bottom-center",
@@ -68,9 +76,22 @@ export default function ClientTable() {
           draggable: true,
           });
       }else{
-        setModalShow(true)
+        if(param==='unidad'){
+          setModalUnidadShow(true)  
+        }else{
+          setModalShow(true) 
+        }
       }
     };
+
+    const onHideUpdate = () =>{
+      setModalShow(false)
+      getCuotas2()
+    }
+
+    const onHideUnidadUpdate = () =>{
+      setModalUnidadShow(false)
+    }
 
     let unidadfuncional = "http://admidgroup.com/api_rest/index.php/api/unidadporcliente";
     let cuota = "http://admidgroup.com/api_rest/index.php/api/cuotasporcliente";
@@ -89,6 +110,7 @@ export default function ClientTable() {
   
 
   const getCuotas = async(id_cli) =>{
+    
     setLoader(true);
     setUnidad({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
     setCuotas([]);
@@ -96,6 +118,7 @@ export default function ClientTable() {
   .then(
     axios.spread((...responses) => {
       setUnidad(responses[0].data.unidad[0])
+      console.log("LLAMA A CUOTAS"+responses[1].data.cuotas[0].monto);
       setCuotas(responses[1].data.cuotas)    
       setNumeroCuota(parseInt(responses[1].data.cuotas[0].total)+1);
       setVariacion(responses[2].data.variaciones[0].valor);
@@ -107,17 +130,65 @@ export default function ClientTable() {
     setLoader(false);
     console.error("ERRORES "+errors);
   });
-  }                                     
+  }  
+  
+  const getCuotas2 = async() =>{
+    setLoader(true);
+    try{
+      axios.post('http://admidgroup.com/api_rest/index.php/api/cuotasporcliente', config)
+          .then(response => {
+            console.log(response.data)
+              setCuotas(response.data.cuotas)
+              setLoader(false);
+            })
+          .catch(error => {
+              console.error('There was an error!', error);
+              setLoader(false);
+        });
+    }catch(error){
+      console.error('There was an error two!', error);
+    }
+  }  
   
   useEffect(() => {
     getCuotas(idcliente)
   }, [idcliente]);
 
+  const handleRowDelete = (oldData, resolve) => {
+    try{
+        axios.post('http://admidgroup.com/api_rest/index.php/api/eliminarcuota', {
+          idcuota: oldData.id_cuota,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            "Access-Control-Allow-Headers":"X-Requested-With"
+           },
+          })
+         .then(response => {
+             
+            if(response.data.status){              
+              getCuotas2()
+              resolve()
+               }else{
+            }
+            
+
+            }
+          )
+          .catch(error => {
+                console.error('There was an error!', error);
+          });
+      }catch(error){
+        console.error('There was an error two!', error);
+      }    
+  }
+
+
   return (
   <div style={{flexDirection:'column', width:'100%'}}>  
   <ToastContainer/> 
-  <AgregarCuotaModal idcliente={idcliente.inputText} numerocuota={numeroCuota} moneda={moneda} variacion={variacion} show={modalShow} onHide={() => setModalShow(false)}/>
-  <MaterialTable
+  <AgregarCuotaModal idcliente={idcliente.inputText} numerocuota={numeroCuota} moneda={moneda} variacion={variacion} show={modalShow} onHide={() => onHideUpdate()}/>
+  <AgregarUnidadModal show={modalUnidadShow} onHide={() => onHideUnidadUpdate()}/>
+   <MaterialTable
       title="Cuotas"
       columns={state.columns}
       data={cuotas}
@@ -125,16 +196,9 @@ export default function ClientTable() {
       style={{ margin:10}}
         editable={{  
         onRowDelete: (oldData) =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              setState((prevState) => {
-                const data = [...prevState.data];
-                data.splice(data.indexOf(oldData), 1);
-                return { ...prevState, data };
-              });
-            }, 600);
-          }),
+        new Promise((resolve) => {
+          handleRowDelete(oldData, resolve)
+        })
       }}
       onRowClick={(event, rowData) => console.log({idcliente})
       }
@@ -189,6 +253,7 @@ export default function ClientTable() {
     <Button
     variant="contained"
     color="primary"
+    id="cuota"
     style={{
       backgroundColor: "#20b1e8",
       margin:'10',
@@ -196,6 +261,18 @@ export default function ClientTable() {
     onClick={() => checkIfEmpty()}
     startIcon={<Add />}>
     Cuota
+  </Button>
+  <Button
+    variant="contained"
+    color="primary"
+    id="unidad"
+    style={{
+      backgroundColor: "#20b1e8",
+      margin:'10',
+    }}
+    onClick={(event) => checkIfEmpty(event, 'unidad')}
+    startIcon={<Add />}>
+    Unidad funcional
   </Button>
     </div >
   );

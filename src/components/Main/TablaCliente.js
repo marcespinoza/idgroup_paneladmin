@@ -50,6 +50,7 @@ export default function TablaCuota()  {
     dispatch({ type: 'MARCELO', data: newValue,});
 };
 
+
   return (
     <MaterialTable
       title="Clientes"
