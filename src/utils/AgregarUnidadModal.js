@@ -1,4 +1,4 @@
-import React, {useState} from 'react';  
+import React, {useState, useRef} from 'react';  
 import './popup.css';  
 import TextField from '@material-ui/core/TextField';
 import axios from "axios";
@@ -7,6 +7,9 @@ import {toast, ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import {Modal, Button} from 'react-bootstrap';
 import {makeStyles} from '@material-ui/core/styles'
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -22,6 +25,8 @@ function AgregarUnidad(props) {
     const[porcentaje, setPorcentaje] = useState(0);
     const [loading, setLoading] = useState(false);
     let toastId;
+    const formRef = useRef();
+
 
     const [loader, showLoader, hideLoader] = useFullPageLoader();
     const config = {
@@ -89,7 +94,26 @@ function AgregarUnidad(props) {
   
 return (  
 <div>
-<Modal
+<Formik
+    initialValues={{
+        ubicacion: '',
+        unidad: '',
+    }}
+    innerRef={formRef}
+    validationSchema={Yup.object().shape({
+        ubicacion: Yup.string()
+            .required('Ingrese su usuario'),
+        unidad: Yup.string()
+            .required('Ingrese su clave'),
+    })}
+    onSubmit={fields => {
+      //  
+    }}
+>
+    {({ values, errors, status, touched, handleSubmit }) => (
+      <div>
+
+    <Modal
         {...props}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
@@ -99,16 +123,20 @@ return (
             Agregar unidad
           </Modal.Title>
         </Modal.Header>
+        
         <Modal.Body>
         <TextField
           id="standard-number"
           label="Ubicacion"
+          name="ubicacion"
           type="number"
+          value={values.ubicacion}
           InputLabelProps={{
             shrink: true,
           }}
-          className={classes.input}
+          className={'form-control' + (errors.ubicacion && touched.ubicacion ? ' is-invalid' : '')}
         />
+        <ErrorMessage name="ubicacion" component="div" className="invalid-feedback" />
         <TextField
           id="standard-number"
           label="Unidad"
@@ -155,8 +183,9 @@ return (
           className={classes.input}
         />
            </Modal.Body>
+           
            <Modal.Footer>
-           <button className="button"  disabled={loading}>
+           <button className="button"  disabled={loading} onClick={() => handleSubmit()}>
             {loading && (
              <i
               className="fa fa-refresh fa-spin"
@@ -166,8 +195,12 @@ return (
             {!loading && <span>GUARDAR</span>}
             </button>
         </Modal.Footer>
-      </Modal>
-        
+        </Modal>
+      
+         </div>
+        )}
+       
+        </Formik>
         </div>
 );  
 }  
