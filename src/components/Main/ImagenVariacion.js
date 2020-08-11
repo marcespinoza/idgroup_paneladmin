@@ -66,7 +66,7 @@ export default function SingleLineGridList() {
 
   return (
     <div>
-     <AwesomeSlider style={{width:'45%', height:'30%'}} media={imagenes} >
+     <AwesomeSlider style={{width:'50%', height:'35%'}} bullets={false} media={imagenes} >
   </AwesomeSlider>
 </div>
   );

@@ -12,6 +12,7 @@ export default function TablaCuota()  {
 
   const [state, setState] = React.useState({
     columns: [
+      {title: 'Unidad', field: 'dpto'},
       {title: 'IdCliente', field: 'id_cliente', hidden:true },
       {title: 'Apellido', field: 'apellido' },
       {title: 'Nombre', field: 'nombre' },
