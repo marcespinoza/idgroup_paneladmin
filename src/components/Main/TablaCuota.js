@@ -110,7 +110,8 @@ export default function ClientTable() {
   
 
   const getCuotas = async(id_cli) =>{
-    
+    console.log("LLAMA A CUOTAS"+idcliente.inputText);
+
     setLoader(true);
     setUnidad({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
     setCuotas([]);
@@ -118,7 +119,6 @@ export default function ClientTable() {
   .then(
     axios.spread((...responses) => {
       setUnidad(responses[0].data.unidad[0])
-      console.log("LLAMA A CUOTAS"+responses[1].data.cuotas[0].monto);
       setCuotas(responses[1].data.cuotas)    
       setNumeroCuota(parseInt(responses[1].data.cuotas[0].total)+1);
       setVariacion(responses[2].data.variaciones[0].valor);

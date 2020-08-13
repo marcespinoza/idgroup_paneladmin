@@ -1,96 +1,105 @@
-import React, {useState, useRef} from 'react';  
+import React, {useState, useRef, useEffect} from 'react';  
 import './popup.css';  
 import TextField from '@material-ui/core/TextField';
 import axios from "axios";
-import useFullPageLoader from '../hooks/useFullPageLoader';
-import {toast, ToastContainer} from 'react-toastify'
+import InputLabel from '@material-ui/core/InputLabel';
 import 'react-toastify/dist/ReactToastify.css';
 import {Modal, Button} from 'react-bootstrap';
 import {makeStyles} from '@material-ui/core/styles'
-import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { Formik, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import NativeSelect from '@material-ui/core/NativeSelect';
 
 
 const useStyles = makeStyles((theme) => ({
   input: {
       marginRight:'10',
-      width: '150',
-    
+      marginBottom:'10',
+      width: '150',    
   },
+  rowinput:{
+    display:'flex', 
+    flexDirection:'row'
+  }
 }));
 
 function AgregarUnidad(props) {  
     const classes = useStyles();
-    const { showpopup, closePopUp } = props;
-    const[porcentaje, setPorcentaje] = useState(0);
     const [loading, setLoading] = useState(false);
-    let toastId;
     const formRef = useRef();
+    const [desarrollo, setDesarrollo] = useState([]);
+    const [form, setState] = useState({
+      ndesarrollo:'',
+      ubicacion: '',
+      unidad: '',
+      dormitorios:'',
+      m2_propios:'',
+      m2_comunes:'',
+      m2_total:''
+    });
 
+    const handleDesarrollo = (event) => {
+      console.log(event.target.value)
+      setState({ ...form,  ["ndesarrollo"]: event.target.value })
+    };
 
-    const [loader, showLoader, hideLoader] = useFullPageLoader();
-    const config = {
-      onUploadProgress: function(progressEvent) {
-        var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-        console.log(percentCompleted/10)
-        setPorcentaje(percentCompleted/10);
-        const progress = progressEvent.loaded / progressEvent.total;
-        if(toastId === null){
-          toastId = toast('Upload in Progress', {progress: progress});
-      } else {
-        toast.update(toastId, {progress: progress
-        })
-      }
-      },
-      headers: { 'Content-Type': 'multipart/form-data' },
-
-    }
-  
-    function handleUpload(file){
-      const formData = new FormData();
-      toastId = null;
-      formData.append("file", file[0]);
-      axios.request({
-        method: "post", 
-        url: "http://admidgroup.com/api_rest/index.php/api/subirimagen", 
-        data: formData, 
-        onUploadProgress: p => {
-          let progress = p.loaded / p.total;
-  
-          // check if we already displayed a toast
-          if(toastId === null){
-              toastId = toast('Subiendo imagen', {
-              progress: progress,
-              type: toast.TYPE.INFO,
-              position: "bottom-center",
-              autoClose: false
-            });
-          } else {
-            toast.update(toastId, {
-              progress: progress,
-              type: toast.TYPE.INFO,
-              position: "bottom-center",
-              autoClose: false
-            })
-          }
-        }
-      }).then(data => {
-        // Upload is done! 
-        // The remaining progress bar will be filled up
-        // The toast will be closed when the transition end
-        toast.done(toastId);
-        closePopUp();
-        toast.success('Subido correctamente', {
-          position: "bottom-center",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
+    const getDesarrollos = async() =>{
+      try{
+        axios.get('http://admidgroup.com/api_rest/index.php/api/desarrollo')
+            .then(response => {
+              console.log(response.data.desarrollos[0].nombre)
+                setDesarrollo(response.data.desarrollos)
+                setState({ ...form,  ["ndesarrollo"]: response.data.desarrollos[0].nombre })
+              })
+            .catch(error => {
+                console.error('There was an error!', error);
           });
-      })
-    }
+      }catch(error){
+        console.error('There was an error two!', error);
+      }
+    }  
+
+    const asignarUnidad = async(fields) =>{
+      console.log(form.ndesarrollo);
+      setLoading(true);
+       try{
+         axios.post('http://admidgroup.com/api_rest/index.php/api/asignarunidad', {
+           idcliente: '74',
+           desarrollo: form.ndesarrollo,
+           ubicacion: fields.ubicacion,
+           unidad: fields.unidad,
+           dormitorios: fields.dormitorios,
+           m2propios: fields.m2_propios,
+           m2comunes: fields.m2_comunes,
+           m2total:fields.m2_total,
+           headers: {
+             'Access-Control-Allow-Origin': '*',
+             "Access-Control-Allow-Headers":"X-Requested-With"
+            },
+           })
+          .then(response => {
+           console.log(response.data.status);
+             if(response.data.status){
+                  props.onHide()
+                  console.log(response.data.status);
+                }else{
+                }
+                setLoading(false);
+               }
+            )
+           .catch(error => {
+                 console.error('There was an error!', error);
+           });
+       }catch(error){
+         console.error('There was an error two!', error);
+         setLoading(false)
+       }
+     } 
+
+    useEffect(() => {
+      getDesarrollos()
+    },[]);
+   
   
 return (  
 <div>
@@ -98,19 +107,31 @@ return (
     initialValues={{
         ubicacion: '',
         unidad: '',
+        dormitorios:'',
+        m2_propios:'',
+        m2_comunes:'',
+        m2_total:''
     }}
     innerRef={formRef}
     validationSchema={Yup.object().shape({
         ubicacion: Yup.string()
-            .required('Ingrese su usuario'),
+            .required('Complete este campo'),
         unidad: Yup.string()
-            .required('Ingrese su clave'),
+            .required('Complete este campo'),
+        dormitorios: Yup.string()
+            .required('Complete este campo'),
+        m2_propios: Yup.string()
+            .required('Complete este campo'),
+        m2_comunes: Yup.string()
+            .required('Complete este campo'), 
+       m2_total: Yup.string()
+            .required('Complete este campo'),       
     })}
     onSubmit={fields => {
-      //  
+      asignarUnidad(fields)
     }}
 >
-    {({ values, errors, status, touched, handleSubmit }) => (
+    {({ values, errors, status, touched, handleChange, handleBlur, handleSubmit }) => (
       <div>
 
     <Modal
@@ -122,9 +143,24 @@ return (
           <Modal.Title id="contained-modal-title-vcenter">
             Agregar unidad
           </Modal.Title>
-        </Modal.Header>
-        
+        </Modal.Header>        
         <Modal.Body>
+        <InputLabel shrink htmlFor="age-native-label-placeholder">
+          desarrollo
+        </InputLabel>
+        <NativeSelect
+          onChange={handleDesarrollo}
+          defaultValue={form.ndesarrollo}
+          inputProps={{
+            name: 'ndesarrollo',
+          }}
+          value={form.ndesarrollo} >
+          {desarrollo.map((e, key) => {
+            return <option key={key} value={e.nombre}>{e.nombre}</option>;
+          })}
+        </NativeSelect>
+        <div className={classes.rowinput}>
+        <div className={classes.input }>
         <TextField
           id="standard-number"
           label="Ubicacion"
@@ -134,58 +170,101 @@ return (
           InputLabelProps={{
             shrink: true,
           }}
-          className={'form-control' + (errors.ubicacion && touched.ubicacion ? ' is-invalid' : '')}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
+          className={ 'form-control' + (errors.ubicacion && touched.ubicacion ? ' is-invalid' : '')}
         />
         <ErrorMessage name="ubicacion" component="div" className="invalid-feedback" />
+        </div>
+        <div className={classes.input }>
         <TextField
           id="standard-number"
           label="Unidad"
           type="number"
+          name="unidad"
           InputLabelProps={{
             shrink: true,
           }}
-          className={classes.input}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0} }}
+          className={'form-control' + (errors.unidad && touched.unidad ? ' is-invalid' : '')}
         />
+        <ErrorMessage name="unidad" component="div" className="invalid-feedback" />
+        </div>
+        <div className={classes.input }>
           <TextField
           id="standard-number"
           label="Dormitorios"
           type="number"
+          name="dormitorios"
           InputLabelProps={{
             shrink: true,
           }}
-          className={classes.input}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0} }}
+          className={'form-control' + (errors.dormitorios && touched.dormitorios ? ' is-invalid' : '')}
         />
+        <ErrorMessage name="unidad" component="div" className="invalid-feedback" />
+        </div>
+        </div>
+        <div className={classes.rowinput}>        
+        <div className={classes.input }>
+        
         <TextField
           id="standard-number"
           label="M2 propios"
+          name="m2_propios"
           type="number"
           InputLabelProps={{
             shrink: true,
           }}
-          className={classes.input}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
+          className={ 'form-control' + (errors.m2_propios && touched.m2_propios ? ' is-invalid' : '')}
         />
+        <ErrorMessage name="m2_propios" component="div" className="invalid-feedback" />
+        </div>
+        <div className={classes.input }>
         <TextField
           id="standard-number"
           label="M2 comunes"
           type="number"
+          name="m2_comunes"
           InputLabelProps={{
             shrink: true,
           }}
-          className={classes.input}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
+          className={'form-control' + (errors.m2_comunes && touched.m2_comunes ? ' is-invalid' : '')}
         />
+        <ErrorMessage name="m2_comunes" component="div" className="invalid-feedback" />
+        </div>
+        <div className={classes.input }>
         <TextField
           id="standard-number"
           label="Total"
           type="number"
+          name="m2_total"
           InputLabelProps={{
             shrink: true,
           }}
-          className={classes.input}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
+          className={'form-control' + (errors.m2_total && touched.m2_total ? ' is-invalid' : '')}
         />
+        <ErrorMessage name="m2_total" component="div" className="invalid-feedback" />
+        </div>
+        </div>
            </Modal.Body>
            
            <Modal.Footer>
-           <button className="button"  disabled={loading} onClick={() => handleSubmit()}>
+           <button className="button" type='button' disabled={loading} onClick={() => handleSubmit()}>
             {loading && (
              <i
               className="fa fa-refresh fa-spin"

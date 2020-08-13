@@ -12,8 +12,8 @@ export default function TablaCuota()  {
 
   const [state, setState] = React.useState({
     columns: [
-      {title: 'Unidad', field: 'dpto'},
       {title: 'IdCliente', field: 'id_cliente', hidden:true },
+      {title: 'Unidad', field: 'dpto'},     
       {title: 'Apellido', field: 'apellido' },
       {title: 'Nombre', field: 'nombre' },
       {title: 'Documento', field: 'documento', type: 'numeric' },
@@ -86,7 +86,7 @@ export default function TablaCuota()  {
           }),
       }}
       onRowClick={(event, rowData) =>
-          changeInputValue(rowData.id_cliente)
+       changeInputValue(rowData.id_cliente)
       }
       localization={{
         toolbar: {
