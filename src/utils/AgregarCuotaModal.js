@@ -1,5 +1,5 @@
 import React, {useState} from 'react';  
-import {Modal, Button} from 'react-bootstrap';
+import {Modal, Button, Form, Col, InputGroup, FormControl} from 'react-bootstrap';
 import Input from '@material-ui/core/Input';
 import { InputLabel } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,7 +8,7 @@ import moment from "moment";
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import FormHelperText from '@material-ui/core/FormHelperText';
-
+import TextField from '@material-ui/core/TextField'
 
 const useStyles = makeStyles((theme) => ({
     input: {
@@ -29,9 +29,18 @@ export default function AgregarCuota(props) {
  const [checkAdelanto, setCheckAdelanto] = useState(false);
  const [loading, setLoading] = useState(false);
  const [emptyInput, setEmptyInput] = useState(true)
+ const [adelanto, setAdelanto] = useState(0)
+ const [observacion, setObservacion] = useState("")
 
- const handleChange = (event) => {
+ const handleAdelanto = (event) => {
   setCheckAdelanto(!checkAdelanto)
+  if(checkAdelanto){
+    setAdelanto(0)
+    setObservacion('')
+  }else{
+    setAdelanto(1)
+    setObservacion('ADELANTO')
+  }
 };
 
 const handleMonto = (event) => {
@@ -43,6 +52,9 @@ const handleMonto = (event) => {
     setMonto(event.target.value)
   }
 };
+const handleObservacion = (event) => {
+  setObservacion(event.target.value)
+};
 
  const agregarCuota = async(id_cli) =>{
    setLoading(true);
@@ -52,15 +64,17 @@ const handleMonto = (event) => {
         fecha: fecha,
         nrocuota: props.numerocuota,
         monto: monto,
-        moneda: "1",
-        variacion_mensual: "12.5",
+        moneda: props.moneda,
+        adelanto:adelanto,
+        variacion_mensual: props.variacion,
+        observacion: observacion,
         headers: {
           'Access-Control-Allow-Origin': '*',
           "Access-Control-Allow-Headers":"X-Requested-With"
          },
         })
        .then(response => {
-        console.log(response.data.status);
+        console.log(response.data);
           if(response.data.status){
                props.onHide()
                console.log(response.data.status);
@@ -87,18 +101,27 @@ const handleMonto = (event) => {
             Agregar cuota
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-        <FormControlLabel
-        control={
-          <Checkbox
-            checked={checkAdelanto}
-            onChange={handleChange}
-            name="adelanto"
-            color="primary"
-          />
-        }
+        <Modal.Body>  
+        <Form.Row className="align-items-center">
+        <Col xs="auto">
+      <Form.Check
+        type="checkbox"
+        className="mb-2"
         label="Adelanto"
-      />          
+        onChange={handleAdelanto}
+      />
+    </Col>
+    <Col xs="auto">
+      <Form.Control
+        className="mb-2"
+        name="observacion"
+        value={observacion}
+        placeholder="Observacion"
+        onChange={handleObservacion}
+      />
+    </Col>
+    
+  </Form.Row>
             <div style={{flexDirection:'row', display:'flex'}}>
                 <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Nro. cuota</InputLabel>

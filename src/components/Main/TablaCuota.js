@@ -45,11 +45,14 @@ export default function ClientTable() {
   const [unidad, setUnidad]= useState({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
   const [age, setAge] = React.useState('');
   const {idcliente, dispatch} = useContext(AppContext);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   const [state, setState] = React.useState({
     columns: [
       {title: 'IdCuota', field: 'id_cuota', hidden:true},
+      {title: 'Adelanto', field: 'adelanto', hidden:true},
       {title: 'Número', field: 'numero', width:'50'},
+      {title: 'Observación', field: 'observacion',  width:'50'},
       {title: 'Fecha', field: 'fecha', type: 'numeric' ,width:'50' },
       {title: 'Monto', field: 'monto', width:'50',  },
       {title: 'Moneda', field: 'moneda', width:'50' },
@@ -219,6 +222,7 @@ export default function ClientTable() {
 
        }
       }}
+      onRowClick={((evt, selectedRow) => console.log(selectedRow.adelanto))}
       options={{
         pageSize:3,
          headerStyle: {
@@ -226,7 +230,10 @@ export default function ClientTable() {
           fontFamily:'Roboto',
           fontWeight: 900,
           color:'#DCDCDC'
-      }
+      },
+      rowStyle: rowData => ({
+        backgroundColor: (rowData.adelanto === "1") ? '#C0FF9A' : '#FFF'
+      })
       }}
       icons={{ 
         Delete: Eliminar,
