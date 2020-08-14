@@ -5,7 +5,9 @@ import { InputLabel } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from "axios";
 import moment from "moment";
-import ButtonLoader from './../utils/ButtonLoader'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -24,8 +26,23 @@ export default function AgregarCuota(props) {
  const [fecha, setFecha] = useState(moment().format("YYYY-MM-DD"));
  const [monto, setMonto] = useState('');
  const [idcli, setIdCli] = useState(0);
- const [buttonState, setState] = useState('');
+ const [checkAdelanto, setCheckAdelanto] = useState(false);
  const [loading, setLoading] = useState(false);
+ const [emptyInput, setEmptyInput] = useState(true)
+
+ const handleChange = (event) => {
+  setCheckAdelanto(!checkAdelanto)
+};
+
+const handleMonto = (event) => {
+  if(event.target.value===""){
+    setEmptyInput(true)
+    setMonto(event.target.value)
+  }else{
+    setEmptyInput(false)
+    setMonto(event.target.value)
+  }
+};
 
  const agregarCuota = async(id_cli) =>{
    setLoading(true);
@@ -71,6 +88,17 @@ export default function AgregarCuota(props) {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
+        <FormControlLabel
+        control={
+          <Checkbox
+            checked={checkAdelanto}
+            onChange={handleChange}
+            name="adelanto"
+            color="primary"
+          />
+        }
+        label="Adelanto"
+      />          
             <div style={{flexDirection:'row', display:'flex'}}>
                 <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Nro. cuota</InputLabel>
@@ -82,7 +110,10 @@ export default function AgregarCuota(props) {
                  </div>
                  <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Monto</InputLabel>
-                 <Input value={monto} onChange={(evt) => {setMonto(evt.target.value); }}/>
+                 <Input error={emptyInput}  value={monto} onChange={(evt) => {handleMonto(evt) }}  aria-describedby="component-error-text"/>
+                 {emptyInput ? (
+                 <FormHelperText error id="component-error-text">* Obligatorio</FormHelperText>
+                  ) : <div  style={{visibility:'hidden'}}>error</div>}              
                  </div>
                  <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Fecha</InputLabel>

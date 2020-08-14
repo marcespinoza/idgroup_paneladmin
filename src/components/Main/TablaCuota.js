@@ -45,9 +45,7 @@ export default function ClientTable() {
   const [unidad, setUnidad]= useState({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
   const [age, setAge] = React.useState('');
   const {idcliente, dispatch} = useContext(AppContext);
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
+
   const [state, setState] = React.useState({
     columns: [
       {title: 'IdCuota', field: 'id_cuota', hidden:true},
@@ -110,7 +108,6 @@ export default function ClientTable() {
   
 
   const getCuotas = async(id_cli) =>{
-    console.log("LLAMA A CUOTAS"+idcliente.inputText);
 
     setLoader(true);
     setUnidad({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
@@ -119,7 +116,9 @@ export default function ClientTable() {
   .then(
     axios.spread((...responses) => {
       setUnidad(responses[0].data.unidad[0])
-      setCuotas(responses[1].data.cuotas)    
+      if(responses[1].data.status){
+        setCuotas(responses[1].data.cuotas)  
+      }        
       setNumeroCuota(parseInt(responses[1].data.cuotas[0].total)+1);
       setVariacion(responses[2].data.variaciones[0].valor);
       setMoneda(responses[1].data.cuotas[0].moneda)
@@ -138,7 +137,9 @@ export default function ClientTable() {
       axios.post('http://admidgroup.com/api_rest/index.php/api/cuotasporcliente', config)
           .then(response => {
             console.log(response.data)
+            if(response.data.status){
               setCuotas(response.data.cuotas)
+            }
               setLoader(false);
             })
           .catch(error => {
