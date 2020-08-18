@@ -29,19 +29,23 @@ const useStyles = makeStyles((theme) => ({
 export const AppContext = React.createContext();
 
 const initialState = {
-  inputText: '',
+  idCliente: '',
+  idUnidad:'',
 };
 
 function reducer(state, action) {
+  console.log("REDUCER "+action.data.id_unidad)
   switch (action.type) {
       case 'UPDATE_INPUT':
         return {
-          inputText: action.data,
+          idCLiente: action.data.id_cliente,
+          idUnidad: action.data.id_unidad
       };
 
       default:
         return {
-          inputText: action.data,
+          idCliente: action.data.id_cliente,
+          idUnidad: action.data.id_unidad
       };
   }
 }
@@ -55,11 +59,10 @@ export default function ButtonAppBar() {
     setShowpopup(true);
   };
   const closePopUp = () => {
-    console.log('CERRAR POPUP');
     setShowpopup(false);
   };
   
-const [idcliente, dispatch] = useReducer(reducer, initialState);
+const [datacliente, dispatch] = useReducer(reducer, initialState);
 
   return (
     <div className={classes.root}>
@@ -77,7 +80,7 @@ const [idcliente, dispatch] = useReducer(reducer, initialState);
           <Button color="inherit" >Cerrar sesión</Button>
         </Toolbar>        
       </AppBar>
-      <AppContext.Provider value={{ idcliente, dispatch }}>
+      <AppContext.Provider value={{ datacliente, dispatch }}>
       <TablaCliente/>
       <div style={{display:'flex', flex:'1',flexDirection:'row'}}>
         <div style={{width:'50%'}}>

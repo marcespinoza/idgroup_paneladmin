@@ -4,7 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import axios from "axios";
 import InputLabel from '@material-ui/core/InputLabel';
 import 'react-toastify/dist/ReactToastify.css';
-import {Modal, Button} from 'react-bootstrap';
+import {Modal, Button, Form as Formr} from 'react-bootstrap';
 import {makeStyles} from '@material-ui/core/styles'
 import { Formik, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -136,7 +136,6 @@ return (
 
     <Modal
         {...props}
-        size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered>
         <Modal.Header closeButton>
@@ -145,8 +144,9 @@ return (
           </Modal.Title>
         </Modal.Header>        
         <Modal.Body>
+          <div className={classes.input}>
         <InputLabel shrink htmlFor="age-native-label-placeholder">
-          desarrollo
+          Desarrollo
         </InputLabel>
         <NativeSelect
           onChange={handleDesarrollo}
@@ -159,6 +159,7 @@ return (
             return <option key={key} value={e.nombre}>{e.nombre}</option>;
           })}
         </NativeSelect>
+        </div>
         <div className={classes.rowinput}>
         <div className={classes.input }>
         <TextField
@@ -259,6 +260,15 @@ return (
           className={'form-control' + (errors.m2_total && touched.m2_total ? ' is-invalid' : '')}
         />
         <ErrorMessage name="m2_total" component="div" className="invalid-feedback" />
+        </div>        
+        </div>
+        <div className={classes.rowinput}>
+        <div className={classes.input }>
+        <Formr.Check
+        type="checkbox"
+        className="mb-2"
+        label="Cochera"
+      />
         </div>
         </div>
            </Modal.Body>

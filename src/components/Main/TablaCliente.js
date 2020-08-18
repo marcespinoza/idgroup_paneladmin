@@ -12,6 +12,7 @@ export default function TablaCuota()  {
 
   const [state, setState] = React.useState({
     columns: [
+      {title: 'IdUnidad', field: 'id_unidad', hidden:true },
       {title: 'IdCliente', field: 'id_cliente', hidden:true },
       {title: 'Desarrollo', field: 'desarrollo'},    
       {title: 'Unidad', field: 'dpto'},     
@@ -30,6 +31,8 @@ export default function TablaCuota()  {
   const [clientes, setClientes] = useState([]);
   const [loader, setLoader]=useState(false);
   const {idcliente, dispatch} = useContext(AppContext);
+  const [selectedRow, setSelectedRow] = useState(null);
+
 
   const getClientes = async() =>{
     setLoader(true)
@@ -48,10 +51,14 @@ export default function TablaCuota()  {
     }
   }            
   
-  const changeInputValue = (newValue) => {console.log("valor"+newValue);
+  const changeInputValue = (newValue) => {
     dispatch({ type: 'MARCELO', data: newValue,});
 };
 
+const wrapperFunction = (rowData) => {
+  changeInputValue(rowData)
+   setSelectedRow(rowData.id_cliente + rowData.id_unidad)
+}
 
   return (
     <MaterialTable
@@ -87,7 +94,7 @@ export default function TablaCuota()  {
           }),
       }}
       onRowClick={(event, rowData) =>
-       changeInputValue(rowData.id_cliente)
+        wrapperFunction(rowData)
       }
       localization={{
         toolbar: {
@@ -108,7 +115,10 @@ export default function TablaCuota()  {
         fontFamily:'Roboto',
         fontWeight: 900,
         color:'#DCDCDC'
-      }
+      },
+      rowStyle: rowData => ({
+        backgroundColor: (selectedRow === rowData.id_cliente + rowData.id_unidad) ? '#EEE' : '#FFF'
+      })
       }}
       icons={{ 
         Delete: Eliminar,

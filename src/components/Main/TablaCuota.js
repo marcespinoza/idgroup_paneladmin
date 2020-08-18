@@ -44,7 +44,7 @@ export default function ClientTable() {
   const [modalUnidadShow, setModalUnidadShow] = useState(false);
   const [unidad, setUnidad]= useState({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
   const [age, setAge] = React.useState('');
-  const {idcliente, dispatch} = useContext(AppContext);
+  const {datacliente, dispatch} = useContext(AppContext);
   const [selectedRow, setSelectedRow] = useState(null);
 
   const [state, setState] = React.useState({
@@ -67,7 +67,7 @@ export default function ClientTable() {
     
     const checkIfEmpty = (e, param) => {
       console.log(param)
-      if(cuotas.length===0 && idcliente.inputText===''){
+      if(cuotas.length===0 && datacliente.idCliente===''){
         toast.error('Seleccione un cliente antes de agregar una cuota', {
           position: "bottom-center",
           autoClose: 3000,
@@ -77,6 +77,7 @@ export default function ClientTable() {
           draggable: true,
           });
       }else{
+        //----Verifico que boton fue presionado----//
         if(param==='unidad'){
           setModalUnidadShow(true)  
         }else{
@@ -99,7 +100,7 @@ export default function ClientTable() {
     let variacionmensual = "http://admidgroup.com/api_rest/index.php/api/variacion";
     
     var config = {
-      idcliente: idcliente.inputText,
+      idcliente: datacliente.idCliente,
         headers: {
           'Access-Control-Allow-Origin': '*',
           "Access-Control-Allow-Headers":"X-Requested-With"
@@ -111,7 +112,7 @@ export default function ClientTable() {
   
 
   const getCuotas = async(id_cli) =>{
-
+    console.log("CLIENTESSS "+id_cli.idCliente+" "+id_cli.idUnidad)
     setLoader(true);
     setUnidad({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
     setCuotas([]);
@@ -155,8 +156,8 @@ export default function ClientTable() {
   }  
   
   useEffect(() => {
-    getCuotas(idcliente)
-  }, [idcliente]);
+    getCuotas(datacliente)
+  }, [datacliente]);
 
   const handleRowDelete = (oldData, resolve) => {
     try{
@@ -172,10 +173,9 @@ export default function ClientTable() {
             if(response.data.status){              
               getCuotas2()
               resolve()
-               }else{
-            }
-            
+            }else{
 
+            }          
             }
           )
           .catch(error => {
@@ -190,7 +190,7 @@ export default function ClientTable() {
   return (
   <div style={{flexDirection:'column', width:'100%'}}>  
   <ToastContainer/> 
-  <AgregarCuotaModal idcliente={idcliente.inputText} numerocuota={numeroCuota} moneda={moneda} variacion={variacion} show={modalShow} onHide={() => onHideUpdate()}/>
+  <AgregarCuotaModal idcliente={datacliente.idCliente} numerocuota={numeroCuota} moneda={moneda} variacion={variacion} show={modalShow} onHide={() => onHideUpdate()}/>
   <AgregarUnidadModal show={modalUnidadShow} onHide={() => onHideUnidadUpdate()}/>
    <MaterialTable
       title="Cuotas"
@@ -204,7 +204,7 @@ export default function ClientTable() {
           handleRowDelete(oldData, resolve)
         })
       }}
-      onRowClick={(event, rowData) => console.log({idcliente})
+      onRowClick={(event, rowData) => console.log({datacliente})
       }
       localization={{
         toolbar: {
@@ -219,7 +219,9 @@ export default function ClientTable() {
        },    
        body:{
         emptyDataSourceMessage:"No hay registros para mostrar",
-
+        editRow:{
+          deleteText:"Seguro que desea eliminar?"
+        }, 
        }
       }}
       onRowClick={((evt, selectedRow) => console.log(selectedRow.adelanto))}

@@ -55,7 +55,6 @@ export default function TablaVariacion()  {
            },
           })
          .then(response => {
-             console.log("ELIMInarcii "+response.data.status)
             if(response.data.status===true){              
 
                }else{

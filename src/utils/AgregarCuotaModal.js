@@ -103,7 +103,7 @@ const handleObservacion = (event) => {
         </Modal.Header>
         <Modal.Body>  
         <Form.Row className="align-items-center">
-        <Col xs="auto">
+     <Col xs="auto">
       <Form.Check
         type="checkbox"
         className="mb-2"
