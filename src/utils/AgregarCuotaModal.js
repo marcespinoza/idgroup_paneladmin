@@ -24,7 +24,7 @@ export default function AgregarCuota(props) {
 
  const classes = useStyles();
  const [fecha, setFecha] = useState(moment().format("YYYY-MM-DD"));
- const [monto, setMonto] = useState('');
+ const [monto, setMonto] = useState(props.montocuota);
  const [idcli, setIdCli] = useState(0);
  const [checkAdelanto, setCheckAdelanto] = useState(false);
  const [loading, setLoading] = useState(false);
@@ -51,6 +51,7 @@ const handleMonto = (event) => {
     setEmptyInput(false)
     setMonto(event.target.value)
   }
+  console.log(event.target.value)
 };
 const handleObservacion = (event) => {
   setObservacion(event.target.value)
@@ -58,8 +59,8 @@ const handleObservacion = (event) => {
 
 useEffect(() => {
   console.log("EFFECT "+props.montocuota)
-  setMonto(props.montocuota)   
-}, );
+  setMonto(props.montocuota)
+}, [props]);
 
 
  const agregarCuota = async(id_cli) =>{
@@ -137,7 +138,7 @@ useEffect(() => {
                  </div>
                  <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Monto</InputLabel>
-                 <Input error={emptyInput}  value={monto} onChange={(evt) => {handleMonto(evt) }}  aria-describedby="component-error-text"/>
+                 <Input error={emptyInput} value={monto} onChange={(evt) => {handleMonto(evt) }}  aria-describedby="component-error-text"/>
                  {emptyInput ? (
                  <FormHelperText error id="component-error-text">* Obligatorio</FormHelperText>
                   ) : <div  style={{visibility:'hidden'}}>error</div>}              

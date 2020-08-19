@@ -35,13 +35,17 @@ function AgregarUnidad(props) {
       dormitorios:'',
       m2_propios:'',
       m2_comunes:'',
-      m2_total:''
+      m2_total:'',
+      cochera:false
     });
 
     const handleDesarrollo = (event) => {
-      console.log(event.target.value)
       setState({ ...form,  ["ndesarrollo"]: event.target.value })
     };
+
+    const handleCheckBox = (event) => {
+      setState({ ...form,  ["cochera"]: event.target.checked })
+    }
 
     const getDesarrollos = async() =>{
       try{
@@ -72,6 +76,7 @@ function AgregarUnidad(props) {
            m2propios: fields.m2_propios,
            m2comunes: fields.m2_comunes,
            m2total:fields.m2_total,
+           cochera:form.cochera,
            headers: {
              'Access-Control-Allow-Origin': '*',
              "Access-Control-Allow-Headers":"X-Requested-With"
@@ -267,6 +272,7 @@ return (
         type="checkbox"
         className="mb-2"
         label="Cochera"
+        onChange={(event) => handleCheckBox(event)}
       />
         </div>
         </div>

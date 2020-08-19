@@ -66,7 +66,6 @@ export default function ClientTable() {
 
     
     const checkIfEmpty = (e, param) => {
-      setMontoCuota(cuotas.slice(0, cuotas.length)[cuotas.length-1].monto)
       if(cuotas.length===0 && datacliente.idCliente===''){
         toast.error('Seleccione un cliente antes de agregar una cuota', {
           position: "bottom-center",
@@ -81,6 +80,7 @@ export default function ClientTable() {
         if(param==='unidad'){
           setModalUnidadShow(true)  
         }else{
+          setMontoCuota(cuotas.slice(0, cuotas.length)[cuotas.length-1].monto)
           setModalShow(true) 
         }
       }
