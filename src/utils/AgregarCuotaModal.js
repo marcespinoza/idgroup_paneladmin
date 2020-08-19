@@ -1,4 +1,4 @@
-import React, {useState} from 'react';  
+import React, {useState, useEffect} from 'react';  
 import {Modal, Button, Form, Col, InputGroup, FormControl} from 'react-bootstrap';
 import Input from '@material-ui/core/Input';
 import { InputLabel } from '@material-ui/core';
@@ -56,11 +56,17 @@ const handleObservacion = (event) => {
   setObservacion(event.target.value)
 };
 
+useEffect(() => {
+  console.log("EFFECT "+props.montocuota)
+  setMonto(props.montocuota)   
+}, );
+
+
  const agregarCuota = async(id_cli) =>{
    setLoading(true);
     try{
       axios.post('http://admidgroup.com/api_rest/index.php/api/agregarcuota', {
-        idcliente: props.idcliente,
+        idunidad: props.idunidad,
         fecha: fecha,
         nrocuota: props.numerocuota,
         monto: monto,
@@ -77,7 +83,6 @@ const handleObservacion = (event) => {
         console.log(response.data);
           if(response.data.status){
                props.onHide()
-               console.log(response.data.status);
              }else{
              }
              setLoading(false);
@@ -119,9 +124,8 @@ const handleObservacion = (event) => {
         placeholder="Observacion"
         onChange={handleObservacion}
       />
-    </Col>
-    
-  </Form.Row>
+    </Col>    
+    </Form.Row>
             <div style={{flexDirection:'row', display:'flex'}}>
                 <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Nro. cuota</InputLabel>
@@ -143,7 +147,11 @@ const handleObservacion = (event) => {
                  <Input value={fecha}/>
                  </div>
                  <div className={classes.input}>
-                 <InputLabel htmlFor="input-with-icon-adornment">Variacion mensual</InputLabel>
+                 <InputLabel htmlFor="input-with-icon-adornment">Variacion %</InputLabel>
+                 <Input value={props.variacion}/>
+                 </div>
+                 <div className={classes.input}>
+                 <InputLabel htmlFor="input-with-icon-adornment">Variacion $</InputLabel>
                  <Input value={props.variacion}/>
                  </div>
              </div>

@@ -129,8 +129,7 @@ return (
     })}
     onSubmit={fields => {
       asignarUnidad(fields)
-    }}
->
+    }}>
     {({ values, errors, status, touched, handleChange, handleBlur, handleSubmit }) => (
       <div>
 

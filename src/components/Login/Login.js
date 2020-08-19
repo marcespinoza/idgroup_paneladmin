@@ -98,12 +98,7 @@ function Login() {
     }catch(error){
       console.error('There was an error two!', error);
     }
-  }                                     
-  
-  // useEffect(() => {
-  //    document.body.style.backgroundImage= "url('./arq.jpg') " }, 
-  //    document.body.style.backgroundSize='cover',
-  //    []) 
+  }              
 
   return (
     <div style={{backgroundImage:"url('./arq.jpg')" , backgroundSize:'cover'}}>

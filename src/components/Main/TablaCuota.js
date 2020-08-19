@@ -43,7 +43,7 @@ export default function ClientTable() {
   const [modalShow, setModalShow] = useState(false);
   const [modalUnidadShow, setModalUnidadShow] = useState(false);
   const [unidad, setUnidad]= useState({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
-  const [age, setAge] = React.useState('');
+  const [montoCuota, setMontoCuota] = useState('');
   const {datacliente, dispatch} = useContext(AppContext);
   const [selectedRow, setSelectedRow] = useState(null);
 
@@ -66,7 +66,7 @@ export default function ClientTable() {
 
     
     const checkIfEmpty = (e, param) => {
-      console.log(param)
+      setMontoCuota(cuotas.slice(0, cuotas.length)[cuotas.length-1].monto)
       if(cuotas.length===0 && datacliente.idCliente===''){
         toast.error('Seleccione un cliente antes de agregar una cuota', {
           position: "bottom-center",
@@ -105,14 +105,20 @@ export default function ClientTable() {
           'Access-Control-Allow-Origin': '*',
           "Access-Control-Allow-Headers":"X-Requested-With"
          },}
+
+     var config2 = {
+       idunidad: datacliente.idUnidad,
+         headers: {
+          'Access-Control-Allow-Origin': '*',
+          "Access-Control-Allow-Headers":"X-Requested-With"
+       },}     
     
     const requestOne = axios.post(unidadfuncional, config);
-    const requestTwo = axios.post(cuota, config);
+    const requestTwo = axios.post(cuota, config2);
     const requestThree = axios.get(variacionmensual);
   
 
   const getCuotas = async(id_cli) =>{
-    console.log("CLIENTESSS "+id_cli.idCliente+" "+id_cli.idUnidad)
     setLoader(true);
     setUnidad({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
     setCuotas([]);
@@ -122,7 +128,7 @@ export default function ClientTable() {
       setUnidad(responses[0].data.unidad[0])
       if(responses[1].data.status){
         setCuotas(responses[1].data.cuotas)  
-      }        
+      }
       setNumeroCuota(parseInt(responses[1].data.cuotas[0].total)+1);
       setVariacion(responses[2].data.variaciones[0].valor);
       setMoneda(responses[1].data.cuotas[0].moneda)
@@ -131,18 +137,17 @@ export default function ClientTable() {
   )
   .catch(errors => {
     setLoader(false);
-    console.error("ERRORES "+errors);
   });
   }  
   
   const getCuotas2 = async() =>{
     setLoader(true);
     try{
-      axios.post('http://admidgroup.com/api_rest/index.php/api/cuotasporcliente', config)
+      axios.post('http://admidgroup.com/api_rest/index.php/api/cuotasporcliente', config2)
           .then(response => {
-            console.log(response.data)
             if(response.data.status){
               setCuotas(response.data.cuotas)
+              setNumeroCuota(parseInt(response.data.cuotas[0].total)+1);
             }
               setLoader(false);
             })
@@ -156,7 +161,9 @@ export default function ClientTable() {
   }  
   
   useEffect(() => {
-    getCuotas(datacliente)
+    if(datacliente.idUnidad!=null){
+      getCuotas(datacliente)
+    }    
   }, [datacliente]);
 
   const handleRowDelete = (oldData, resolve) => {
@@ -190,7 +197,7 @@ export default function ClientTable() {
   return (
   <div style={{flexDirection:'column', width:'100%'}}>  
   <ToastContainer/> 
-  <AgregarCuotaModal idcliente={datacliente.idCliente} numerocuota={numeroCuota} moneda={moneda} variacion={variacion} show={modalShow} onHide={() => onHideUpdate()}/>
+  <AgregarCuotaModal idunidad={datacliente.idUnidad} numerocuota={numeroCuota} montocuota={montoCuota} moneda={moneda} variacion={variacion} show={modalShow} onHide={() => onHideUpdate()}/>
   <AgregarUnidadModal show={modalUnidadShow} onHide={() => onHideUnidadUpdate()}/>
    <MaterialTable
       title="Cuotas"

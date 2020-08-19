@@ -34,7 +34,6 @@ const initialState = {
 };
 
 function reducer(state, action) {
-  console.log("REDUCER "+action.data.id_unidad)
   switch (action.type) {
       case 'UPDATE_INPUT':
         return {
