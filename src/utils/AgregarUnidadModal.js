@@ -2,6 +2,7 @@ import React, {useState, useRef, useEffect} from 'react';
 import './popup.css';  
 import TextField from '@material-ui/core/TextField';
 import axios from "axios";
+import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import 'react-toastify/dist/ReactToastify.css';
 import {Modal, Button, Form as Formr} from 'react-bootstrap';
@@ -9,7 +10,16 @@ import {makeStyles} from '@material-ui/core/styles'
 import { Formik, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import NativeSelect from '@material-ui/core/NativeSelect';
-
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import {InputGroup} from 'react-bootstrap'
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -27,6 +37,7 @@ function AgregarUnidad(props) {
     const classes = useStyles();
     const [loading, setLoading] = useState(false);
     const formRef = useRef();
+    const [simbolo, setSimbolo] = useState('')
     const [desarrollo, setDesarrollo] = useState([]);
     const [form, setState] = useState({
       ndesarrollo:'',
@@ -47,6 +58,25 @@ function AgregarUnidad(props) {
       setState({ ...form,  ["cochera"]: event.target.checked })
     }
 
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+
+  const handleSimbolo = (event) => {
+    setSimbolo(event.target.value);
+  };
+
+    var config = {
+      idcliente: "74",
+        timeout: 7000,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          "Access-Control-Allow-Headers":"X-Requested-With"
+         },
+     }
+
     const getDesarrollos = async() =>{
       try{
         axios.get('http://admidgroup.com/api_rest/index.php/api/desarrollo')
@@ -64,7 +94,6 @@ function AgregarUnidad(props) {
     }  
 
     const asignarUnidad = async(fields) =>{
-      console.log(form.ndesarrollo);
       setLoading(true);
        try{
          axios.post('http://admidgroup.com/api_rest/index.php/api/asignarunidad', {
@@ -266,18 +295,131 @@ return (
         <ErrorMessage name="m2_total" component="div" className="invalid-feedback" />
         </div>        
         </div>
+        <div className={classes.rowinput}>   
+        <div className={classes.input }>
+        <TextField
+          select
+          style={{width:100}}
+          label="Moneda"
+          onChange={handleSimbolo}
+           >
+            <MenuItem value="$">$</MenuItem>
+            <MenuItem value="$$">$$</MenuItem>
+        </TextField>
+      </div>
+      <div className={classes.input }>
+        <FormControl fullWidth className={classes.margin}>
+          <InputLabel htmlFor="standard-adornment-amount">Amount</InputLabel>
+          <Input
+            value={values.amount}
+            onChange={handleChange('amount')}
+            startAdornment={<InputAdornment position="start">{simbolo}</InputAdornment>}
+          />
+        </FormControl>  
+        </div>
+        <div className={classes.input }>
+        <TextField
+          id="standard-number"
+          label="Anticipo"
+          type="number"
+          name="m2_total"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
+          className={'form-control' + (errors.m2_total && touched.m2_total ? ' is-invalid' : '')}
+        />
+        <ErrorMessage name="m2_total" component="div" className="invalid-feedback" />
+        </div>        
+        </div>
+        <div className={classes.rowinput}>   
+        <div className={classes.input }>
+        <TextField
+          id="standard-number"
+          label="Refuerzo 1"
+          type="number"
+          name="m2_comunes"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
+          className={'form-control' + (errors.m2_comunes && touched.m2_comunes ? ' is-invalid' : '')}
+        />
+        </div>
+        <div className={classes.input }>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <Grid container justify="space-around">
+        <KeyboardDatePicker
+          id="date-picker-dialog"
+          label="Fecha refuerzo 1"
+          format="MM/dd/yyyy"
+          value={selectedDate}
+          onChange={handleDateChange}
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
+        />
+        </Grid>
+        </MuiPickersUtilsProvider>
+        <ErrorMessage name="m2_total" component="div" className="invalid-feedback" />
+        </div>        
+        </div>
+        <div className={classes.rowinput}> 
+        <div className={classes.input }>
+        <TextField
+          id="standard-number"
+          label="Refuerzo 2"
+          type="number"
+          name="m2_comunes"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
+          className={'form-control' + (errors.m2_comunes && touched.m2_comunes ? ' is-invalid' : '')}
+        />
+        <ErrorMessage name="m2_comunes" component="div" className="invalid-feedback" />
+        </div>
+        <div className={classes.input }>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <Grid container justify="space-around">
+        <KeyboardDatePicker
+          id="date-picker-dialog"
+          label="Fecha refuerzo 2"
+          format="MM/dd/yyyy"
+          value={selectedDate}
+          onChange={handleDateChange}
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
+        />
+        </Grid>
+        </MuiPickersUtilsProvider>
+        </div>        
+        </div>
         <div className={classes.rowinput}>
         <div className={classes.input }>
-        <Formr.Check
-        type="checkbox"
-        className="mb-2"
-        label="Cochera"
-        onChange={(event) => handleCheckBox(event)}
-      />
+        <TextField
+          id="standard-number"
+          label="Nro. cochera"
+          type="number"
+          name="cochera"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0} }}
+          className={'form-control' + (errors.unidad && touched.unidad ? ' is-invalid' : '')}
+        />
         </div>
         </div>
-           </Modal.Body>
-           
+           </Modal.Body>           
            <Modal.Footer>
            <button className="button" type='button' disabled={loading} onClick={() => handleSubmit()}>
             {loading && (
