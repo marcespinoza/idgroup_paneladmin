@@ -7,7 +7,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import 'react-toastify/dist/ReactToastify.css';
 import {Modal, Button, Form as Formr} from 'react-bootstrap';
 import {makeStyles} from '@material-ui/core/styles'
-import { Formik, Form, ErrorMessage } from 'formik';
+import { Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import {
@@ -16,10 +16,9 @@ import {
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import MenuItem from '@material-ui/core/MenuItem';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import {InputGroup} from 'react-bootstrap'
+
+ 
+import "react-datepicker/dist/react-datepicker.css";
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -47,7 +46,14 @@ function AgregarUnidad(props) {
       m2_propios:'',
       m2_comunes:'',
       m2_total:'',
-      cochera:false
+      moneda:'',
+      valor_cuota:'',
+      anticipo:'',
+      refuerzo1:'',
+      fecha_refuerzo1:'',
+      refuerzo2:'',
+      fecha_refuerzo2:'',      
+      cochera:'',
     });
 
     const handleDesarrollo = (event) => {
@@ -58,7 +64,7 @@ function AgregarUnidad(props) {
       setState({ ...form,  ["cochera"]: event.target.checked })
     }
 
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [selectedDate, setSelectedDate] = React.useState();
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -67,15 +73,6 @@ function AgregarUnidad(props) {
   const handleSimbolo = (event) => {
     setSimbolo(event.target.value);
   };
-
-    var config = {
-      idcliente: "74",
-        timeout: 7000,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          "Access-Control-Allow-Headers":"X-Requested-With"
-         },
-     }
 
     const getDesarrollos = async() =>{
       try{
@@ -93,7 +90,34 @@ function AgregarUnidad(props) {
       }
     }  
 
+    const DatePickerField = ({ field, form, ...other }) => {
+      const currentError = form.errors[field.name];
+    
+      return (
+        <KeyboardDatePicker
+          clearable
+          disablePast
+          name={field.name}
+          value={field.value}
+          format="dd/MM/yyyy"
+          helperText={currentError}
+          error={Boolean(currentError)}
+          onError={error => {
+            // handle as a side effect
+            if (error !== currentError) {
+              form.setFieldError(field.name, error);
+            }
+          }}
+          // if you are using custom validation schema you probably want to pass `true` as third argument
+          onChange={date => form.setFieldValue(field.name, date, false)}
+          {...other}
+        />
+      );
+    };
+    
+
     const asignarUnidad = async(fields) =>{
+      console.log(fields.fecha_refuerzo1)
       setLoading(true);
        try{
          axios.post('http://admidgroup.com/api_rest/index.php/api/asignarunidad', {
@@ -105,7 +129,14 @@ function AgregarUnidad(props) {
            m2propios: fields.m2_propios,
            m2comunes: fields.m2_comunes,
            m2total:fields.m2_total,
-           cochera:form.cochera,
+           moneda: fields.moneda,
+           valor_cuota: fields.valor_cuota,
+           anticipo:fields.anticipo,
+           refuerzo1: fields.refuerzo1,
+           fecha_refuerzo1:fields.fecha_refuerzo1,
+           refuerzo2:fields.refuerzo2,
+           fecha_refuerzo2:fields.fecha_refuerzo2,           
+           cochera:fields.cochera,
            headers: {
              'Access-Control-Allow-Origin': '*',
              "Access-Control-Allow-Headers":"X-Requested-With"
@@ -144,22 +175,37 @@ return (
         dormitorios:'',
         m2_propios:'',
         m2_comunes:'',
-        m2_total:''
+        m2_total:'',
+        moneda:'',
+        valor_cuota:'',
+        anticipo:'',
+        refuerzo1:'',
+        fecha_refuerzo1:'',
+        refuerzo2:'',
+        fecha_refuerzo2:'',
+        cochera:''
     }}
     innerRef={formRef}
     validationSchema={Yup.object().shape({
         ubicacion: Yup.string()
-            .required('Complete este campo'),
+            .required('Obligatorio'),
         unidad: Yup.string()
-            .required('Complete este campo'),
+            .required('Obligatorio'),
         dormitorios: Yup.string()
-            .required('Complete este campo'),
-        m2_propios: Yup.string()
-            .required('Complete este campo'),
-        m2_comunes: Yup.string()
-            .required('Complete este campo'), 
-       m2_total: Yup.string()
-            .required('Complete este campo'),       
+            .required('Obligatorio'),
+       valor_cuota: Yup.string()
+            .required('Obligatorio'),      
+       anticipo: Yup.string()
+            .required('Obligatorio'), 
+       refuerzo1: Yup.string()
+          .required('Obligatorio'), 
+       fecha_refuerzo1:Yup.date(), 
+       refuerzo2: Yup.string()
+            .required('Obligatorio'),  
+       cochera:Yup.number()
+       .integer()
+       .default(11) 
+       .nullable(true)                                        
     })}
     onSubmit={fields => {
       asignarUnidad(fields)
@@ -308,30 +354,36 @@ return (
         </TextField>
       </div>
       <div className={classes.input }>
-        <FormControl fullWidth className={classes.margin}>
-          <InputLabel htmlFor="standard-adornment-amount">Amount</InputLabel>
-          <Input
-            value={values.amount}
-            onChange={handleChange('amount')}
-            startAdornment={<InputAdornment position="start">{simbolo}</InputAdornment>}
-          />
-        </FormControl>  
-        </div>
-        <div className={classes.input }>
         <TextField
           id="standard-number"
-          label="Anticipo"
+          label="Valor cuota"
           type="number"
-          name="m2_total"
+          name="valor_cuota"
           InputLabelProps={{
             shrink: true,
           }}
           onChange={handleChange}
           onBlur={handleBlur}
           InputProps={{ inputProps: { min: 0 } }}
-          className={'form-control' + (errors.m2_total && touched.m2_total ? ' is-invalid' : '')}
+          className={'form-control' + (errors.valor_cuota && touched.valor_cuota ? ' is-invalid' : '')}
         />
-        <ErrorMessage name="m2_total" component="div" className="invalid-feedback" />
+        <ErrorMessage name="valor_cuota" component="div" className="invalid-feedback" />
+        </div>  
+        <div className={classes.input }>
+        <TextField
+          id="standard-number"
+          label="Anticipo"
+          type="number"
+          name="anticipo"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
+          className={'form-control' + (errors.anticipo && touched.anticipo ? ' is-invalid' : '')}
+        />
+        <ErrorMessage name="anticipo" component="div" className="invalid-feedback" />
         </div>        
         </div>
         <div className={classes.rowinput}>   
@@ -340,32 +392,22 @@ return (
           id="standard-number"
           label="Refuerzo 1"
           type="number"
-          name="m2_comunes"
+          name="refuerzo1"
           InputLabelProps={{
             shrink: true,
           }}
           onChange={handleChange}
           onBlur={handleBlur}
           InputProps={{ inputProps: { min: 0 } }}
-          className={'form-control' + (errors.m2_comunes && touched.m2_comunes ? ' is-invalid' : '')}
+          className={'form-control' + (errors.refuerzo1 && touched.refuerzo1 ? ' is-invalid' : '')}
         />
+        <ErrorMessage name="refuerzo1" component="div" className="invalid-feedback" />
         </div>
         <div className={classes.input }>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Grid container justify="space-around">
-        <KeyboardDatePicker
-          id="date-picker-dialog"
-          label="Fecha refuerzo 1"
-          format="MM/dd/yyyy"
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
-        </Grid>
+        <Field name="fecha_refuerzo1" component={DatePickerField} />
         </MuiPickersUtilsProvider>
-        <ErrorMessage name="m2_total" component="div" className="invalid-feedback" />
+        <ErrorMessage name="fecha_refuerzo1" component="div" className="invalid-feedback" />
         </div>        
         </div>
         <div className={classes.rowinput}> 
@@ -374,16 +416,16 @@ return (
           id="standard-number"
           label="Refuerzo 2"
           type="number"
-          name="m2_comunes"
+          name="refuerzo2"
           InputLabelProps={{
             shrink: true,
           }}
           onChange={handleChange}
           onBlur={handleBlur}
           InputProps={{ inputProps: { min: 0 } }}
-          className={'form-control' + (errors.m2_comunes && touched.m2_comunes ? ' is-invalid' : '')}
+          className={'form-control' + (errors.refuerzo2 && touched.refuerzo2 ? ' is-invalid' : '')}
         />
-        <ErrorMessage name="m2_comunes" component="div" className="invalid-feedback" />
+        <ErrorMessage name="refuerzo2" component="div" className="invalid-feedback" />
         </div>
         <div className={classes.input }>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -415,7 +457,7 @@ return (
           onChange={handleChange}
           onBlur={handleBlur}
           InputProps={{ inputProps: { min: 0} }}
-          className={'form-control' + (errors.unidad && touched.unidad ? ' is-invalid' : '')}
+          className={'form-control' + (errors.cochera && touched.cochera ? ' is-invalid' : '')}
         />
         </div>
         </div>

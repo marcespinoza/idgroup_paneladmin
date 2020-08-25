@@ -51,6 +51,7 @@ export default function ClientTable() {
     columns: [
       {title: 'IdCuota', field: 'id_cuota', hidden:true},
       {title: 'Adelanto', field: 'adelanto', hidden:true},
+      // {title: 'Mes', field: 'mes', hidden:true},
       {title: 'Número', field: 'numero', width:'50'},
       {title: 'Observación', field: 'observacion',  width:'50'},
       {title: 'Fecha', field: 'fecha', type: 'numeric' ,width:'50' },
@@ -80,6 +81,7 @@ export default function ClientTable() {
         if(param==='unidad'){
           setModalUnidadShow(true)  
         }else{
+          console.log(cuotas)
           setMontoCuota(cuotas.slice(0, cuotas.length)[cuotas.length-1].monto)
           setModalShow(true) 
         }
@@ -125,7 +127,8 @@ export default function ClientTable() {
     axios.all([requestOne, requestTwo, requestThree])
   .then(
     axios.spread((...responses) => {
-      setUnidad(responses[0].data.unidad[0])
+      setUnidad(datacliente.idUnidad)
+      console.log(responses[1].data.status)
       if(responses[1].data.status){
         setCuotas(responses[1].data.cuotas)  
       }

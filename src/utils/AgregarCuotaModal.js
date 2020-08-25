@@ -58,12 +58,12 @@ const handleObservacion = (event) => {
 };
 
 useEffect(() => {
-  console.log("EFFECT "+props.montocuota)
   setMonto(props.montocuota)
 }, [props]);
 
 
  const agregarCuota = async(id_cli) =>{
+   console.log("ADEL "+adelanto)
    setLoading(true);
     try{
       axios.post('http://admidgroup.com/api_rest/index.php/api/agregarcuota', {
