@@ -115,7 +115,7 @@ export default function ClientTable() {
           "Access-Control-Allow-Headers":"X-Requested-With"
        },}     
     
-    const requestOne = axios.post(unidadfuncional, config);
+    const requestOne = axios.post(unidadfuncional, config2);
     const requestTwo = axios.post(cuota, config2);
     const requestThree = axios.get(variacionmensual);
   
@@ -127,9 +127,8 @@ export default function ClientTable() {
     axios.all([requestOne, requestTwo, requestThree])
   .then(
     axios.spread((...responses) => {
-      setUnidad(datacliente.idUnidad)
-      console.log(responses[1].data.status)
-      if(responses[1].data.status){
+      setUnidad(responses[0].data.unidad[0])
+      if(responses[1].data.status && responses[1].data.cuotas[0].numero!=0){
         setCuotas(responses[1].data.cuotas)  
       }
       setNumeroCuota(parseInt(responses[1].data.cuotas[0].total)+1);
@@ -268,6 +267,22 @@ export default function ClientTable() {
     <Col className={classes.itemcard}>{unidad.m2_propios}</Col>
     <Col className={classes.itemcard}>{unidad.m2_comunes}</Col>
     <Col className={classes.itemcard}>{unidad.total_m2}</Col>
+  </Row>
+  <Row style={{backgroundColor:'#20b1e8'}}>
+    <Col className={classes.itemcardtitle}>ANTICIPO</Col>
+    <Col className={classes.itemcardtitle}>1° REFUERZO</Col>
+    <Col className={classes.itemcardtitle}>FECHA</Col>
+    <Col className={classes.itemcardtitle}>2° REFUERZO</Col>
+    <Col className={classes.itemcardtitle}>FECHA</Col>
+    <Col className={classes.itemcardtitle}>NRO. COCHERA</Col>
+  </Row>
+  <Row >
+    <Col className={classes.itemcard}>{unidad.anticipo}</Col>
+    <Col className={classes.itemcard}>{unidad.refuerzo1}</Col>
+    <Col className={classes.itemcard}>{unidad.fecha_refuerzo1}</Col>
+    <Col className={classes.itemcard}>{unidad.refuerzo2}</Col>
+    <Col className={classes.itemcard}>{unidad.fecha_refuerzo2}</Col>
+    <Col className={classes.itemcard}>{unidad.cochera}</Col>
   </Row>
   </Card>
     <Button

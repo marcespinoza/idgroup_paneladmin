@@ -60,7 +60,13 @@ const useStyles = makeStyles((theme) => ({
     borderRadius:20,
     outline: 'none',
     boxshadow: 'none',
-  }
+  },
+  passwordicon:{
+    position: 'absolute',
+  top: 20,
+  right: 5,
+}
+  
 }));
 
 
@@ -135,13 +141,15 @@ function Login() {
          <ErrorMessage name="usuario" component="div" className="invalid-feedback" />
          </div>
          <div style={{height:40, width:'100%', paddingBottom:'70'}}>
-         <Field name="clave" type="text" placeholder="Clave"  className={'form-control' + (errors.clave && touched.clave ? ' is-invalid' : '')} />
+           <div>
+         <Field name="clave" type="password" placeholder="Clave"  className={'form-control' + (errors.clave && touched.clave ? ' is-invalid' : '')} />
+         </div>
          <ErrorMessage name="clave" component="div" className="invalid-feedback" />
          </div>
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Recuerdame"
-          />
+          /> */}
           <Button
             fullWidth
             variant="contained"

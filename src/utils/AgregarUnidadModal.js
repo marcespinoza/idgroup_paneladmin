@@ -49,6 +49,7 @@ function AgregarUnidad(props) {
       moneda:'',
       valor_cuota:'',
       anticipo:'',
+      valor_total:'',
       refuerzo1:'',
       fecha_refuerzo1:'',
       refuerzo2:'',
@@ -60,10 +61,6 @@ function AgregarUnidad(props) {
       setState({ ...form,  ["ndesarrollo"]: event.target.value })
     };
 
-    const handleCheckBox = (event) => {
-      setState({ ...form,  ["cochera"]: event.target.checked })
-    }
-
   const [selectedDate, setSelectedDate] = React.useState();
 
   const handleDateChange = (date) => {
@@ -73,6 +70,29 @@ function AgregarUnidad(props) {
   const handleSimbolo = (event) => {
     setSimbolo(event.target.value);
   };
+
+  const handlePorcentajeAnticipo = (evt)=>{
+    let ref1 = (evt.target.value * Number(formRef.current.values.valor_total))/100 
+    setState({ ...form,  ["anticipo"]: ref1 })
+  }
+
+  const handlePorcentaje1 = (evt)=>{
+    let ref1 = (evt.target.value * Number(formRef.current.values.valor_total))/100 
+    setState({ ...form,  ["refuerzo1"]: ref1 })
+  }
+
+  const handlePorcentaje2 = (evt)=>{
+    let ref1 = (evt.target.value * Number(formRef.current.values.valor_total))/100 
+    setState({ ...form,  ["refuerzo2"]: ref1 })
+  }
+
+  const handleValorTotal = (evt)=>{
+    let value = evt.target.value
+    let porc1 = (value * Number(formRef.current.values.porcentaje1))/100 
+    let porc2 = (value * Number(formRef.current.values.porcentaje2))/100 
+    let porc3 = (value * Number(formRef.current.values.porcentaje_anticipo))/100 
+    setState({ ...form,  ["refuerzo1"]: porc1,  ["refuerzo2"]: porc2 ,  ["anticipo"]: porc3 })
+  }
 
     const getDesarrollos = async() =>{
       try{
@@ -179,10 +199,13 @@ return (
         moneda:'',
         valor_cuota:'',
         anticipo:'',
+        valor_total:'',
         refuerzo1:'',
         fecha_refuerzo1:'',
+        porcentaje1:'',
         refuerzo2:'',
         fecha_refuerzo2:'',
+        porcentaje2:'',
         cochera:''
     }}
     innerRef={formRef}
@@ -199,7 +222,10 @@ return (
             .required('Obligatorio'), 
        refuerzo1: Yup.string()
           .required('Obligatorio'), 
-       fecha_refuerzo1:Yup.date(), 
+       fecha_refuerzo1:Yup
+       .date()
+       .nullable()
+       .required("Data deve ser informada"),
        refuerzo2: Yup.string()
             .required('Obligatorio'),  
        cochera:Yup.number()
@@ -210,7 +236,7 @@ return (
     onSubmit={fields => {
       asignarUnidad(fields)
     }}>
-    {({ values, errors, status, touched, handleChange, handleBlur, handleSubmit }) => (
+    {({ values, errors, status, touched, handleChange, handleBlur, handleSubmit , setFieldValue}) => (
       <div>
 
     <Modal
@@ -356,6 +382,24 @@ return (
       <div className={classes.input }>
         <TextField
           id="standard-number"
+          label="Valor total"
+          type="number"
+          name="valor_total"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={evt => {handleChange(evt); handleValorTotal(evt)}}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
+          className={'form-control' + (errors.valor_total && touched.valor_total ? ' is-invalid' : '')}
+        />
+        <ErrorMessage name="valor_total" component="div" className="invalid-feedback" />
+        </div>                 
+        </div>
+        <div className={classes.rowinput}>   
+      <div className={classes.input }>
+        <TextField
+          id="standard-number"
           label="Valor cuota"
           type="number"
           name="valor_cuota"
@@ -372,19 +416,55 @@ return (
         <div className={classes.input }>
         <TextField
           id="standard-number"
-          label="Anticipo"
+          label="Cant. cuotas"
           type="number"
-          name="anticipo"
+          name="cant_cuotas"
           InputLabelProps={{
             shrink: true,
           }}
           onChange={handleChange}
           onBlur={handleBlur}
           InputProps={{ inputProps: { min: 0 } }}
+          className={'form-control' + (errors.cant_cuotas && touched.cant_cuotas ? ' is-invalid' : '')}
+        />
+        <ErrorMessage name="cant_cuotas" component="div" className="invalid-feedback" />
+        </div>        
+        </div>
+        <div className={classes.rowinput}>         
+        <div className={classes.input }>
+        <TextField
+          id="standard-number"
+          label="Anticipo"
+          type="number"
+          name="anticipo"
+          disabled={true}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          value={form.anticipo}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
           className={'form-control' + (errors.anticipo && touched.anticipo ? ' is-invalid' : '')}
         />
         <ErrorMessage name="anticipo" component="div" className="invalid-feedback" />
-        </div>        
+        </div>  
+        <div className={classes.input }>
+        <TextField
+          id="standard-number"
+          label="Porcentaje"
+          type="number"
+          name="porcentaje_anticipo"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={evt => {handleChange(evt); handlePorcentajeAnticipo(evt)}}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
+          className={'form-control' + (errors.porcentaje_anticipo && touched.porcentaje_anticipo ? ' is-invalid' : '')}
+        />
+        <ErrorMessage name="porcentaje_anticipo" component="div" className="invalid-feedback" />
+        </div>       
         </div>
         <div className={classes.rowinput}>   
         <div className={classes.input }>
@@ -393,6 +473,8 @@ return (
           label="Refuerzo 1"
           type="number"
           name="refuerzo1"
+          disabled={true}
+          value={form.refuerzo1}
           InputLabelProps={{
             shrink: true,
           }}
@@ -404,9 +486,40 @@ return (
         <ErrorMessage name="refuerzo1" component="div" className="invalid-feedback" />
         </div>
         <div className={classes.input }>
+        <TextField
+          id="standard-number"
+          label="Porcentaje"
+          type="number"
+          name="porcentaje1"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={evt => {handleChange(evt); handlePorcentaje1(evt)}}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
+          className={'form-control' + (errors.porcentaje1 && touched.porcentaje1 ? ' is-invalid' : '')}
+        />
+        <ErrorMessage name="porcentaje1" component="div" className="invalid-feedback" />
+        </div>
+        <div className={classes.input }>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Field name="fecha_refuerzo1" component={DatePickerField} />
-        </MuiPickersUtilsProvider>
+                <KeyboardDatePicker
+                m={-10}
+                  id="date-picker-dialog"
+                  format="MM/dd/yyyy"
+                  name="fecha_refuerzo1"
+                  value={values.fecha_refuerzo1}
+                  clearable
+                  error={''}
+                  label="FECHA"
+                    onChange={value => setFieldValue("fecha_refuerzo1", value)}
+                  KeyboardButtonProps={{
+                    "aria-label": "change date"
+                  }}
+                  InputLabelProps={{ shrink: true }}
+                  className={'form-control' + (errors.fecha_refuerzo1 && touched.fecha_refuerzo1 ? ' is-invalid' : '')}
+                />
+              </MuiPickersUtilsProvider>
         <ErrorMessage name="fecha_refuerzo1" component="div" className="invalid-feedback" />
         </div>        
         </div>
@@ -416,7 +529,10 @@ return (
           id="standard-number"
           label="Refuerzo 2"
           type="number"
+          disabled={true}
           name="refuerzo2"
+          helperText={''}
+          value={form.refuerzo2}
           InputLabelProps={{
             shrink: true,
           }}
@@ -428,20 +544,40 @@ return (
         <ErrorMessage name="refuerzo2" component="div" className="invalid-feedback" />
         </div>
         <div className={classes.input }>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Grid container justify="space-around">
-        <KeyboardDatePicker
-          id="date-picker-dialog"
-          label="Fecha refuerzo 2"
-          format="MM/dd/yyyy"
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
+        <TextField
+          id="standard-number"
+          label="Porcentaje"
+          type="number"
+          name="porcentaje2"
+          InputLabelProps={{
+            shrink: true,
           }}
+          onChange={evt => {handleChange(evt);handlePorcentaje2(evt)}}
+          onBlur={handleBlur}
+          InputProps={{ inputProps: { min: 0 } }}
+          className={'form-control' + (errors.porcentaje2 && touched.porcentaje2 ? ' is-invalid' : '')}
         />
-        </Grid>
-        </MuiPickersUtilsProvider>
+        <ErrorMessage name="refuerzo1" component="div" className="invalid-feedback" />
+        </div>
+        <div className={classes.input }>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                m={-10}
+                  id="date-picker-dialog"
+                  format="MM/dd/yyyy"
+                  name="fecha_refuerzo2"
+                  value={values.fecha_refuerzo2}
+                  rror={''}
+                  clearable
+                  label="FECHA"
+                    onChange={value => setFieldValue("fecha_refuerzo2", value)}
+                  KeyboardButtonProps={{
+                    "aria-label": "change date"
+                  }}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </MuiPickersUtilsProvider>
+        <ErrorMessage name="fecha_refuerzo2" component="div" className="invalid-feedback" />
         </div>        
         </div>
         <div className={classes.rowinput}>

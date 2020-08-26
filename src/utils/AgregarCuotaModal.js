@@ -31,6 +31,7 @@ export default function AgregarCuota(props) {
  const [emptyInput, setEmptyInput] = useState(true)
  const [adelanto, setAdelanto] = useState(0)
  const [observacion, setObservacion] = useState("")
+ const [variacionPesos, setVariacionPesos] = useState('')
 
  const handleAdelanto = (event) => {
   setCheckAdelanto(!checkAdelanto)
@@ -57,8 +58,20 @@ const handleObservacion = (event) => {
   setObservacion(event.target.value)
 };
 
-useEffect(() => {
+const calcularNuevaCuota = ()=>{
+  if(props.numerocuota!==1){
+  let porc = Number(props.montocuota) * Number(props.variacion) / 100
+  setVariacionPesos(porc)
+  let nuevo_valor = Number(props.montocuota) + porc
+  let nuevo_valor_decimal = nuevo_valor.toFixed(2)
+  setMonto(nuevo_valor_decimal)
+}else{
   setMonto(props.montocuota)
+}
+}
+
+useEffect(() => {
+  calcularNuevaCuota()
 }, [props]);
 
 
@@ -153,7 +166,7 @@ useEffect(() => {
                  </div>
                  <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Variacion $</InputLabel>
-                 <Input value={props.variacion}/>
+                 <Input value={variacionPesos}/>
                  </div>
              </div>
              </Modal.Body>
