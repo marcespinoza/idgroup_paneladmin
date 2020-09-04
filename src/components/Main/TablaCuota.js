@@ -5,6 +5,7 @@ import axios from "axios";
 import { makeStyles } from '@material-ui/core/styles';
 import { AppContext } from './../Main/HeaderMain'
 import Add from '@material-ui/icons/Add';
+import Delete from '@material-ui/icons/Remove';
 import Button from '@material-ui/core/Button'
 import AgregarCuotaModal from './../../utils/AgregarCuotaModal'
 import AgregarUnidadModal from '../../utils/AgregarUnidadModal'
@@ -12,7 +13,7 @@ import {toast, ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import {Row, Col, Container} from 'react-bootstrap'
 import Card from '@material-ui/core/Card';
-
+import ConfirmDialog from './../../utils/ConfirmDialog'
 
 const useStyles = makeStyles((theme) => ({
   cardrow: {
@@ -51,7 +52,6 @@ export default function ClientTable() {
     columns: [
       {title: 'IdCuota', field: 'id_cuota', hidden:true},
       {title: 'Adelanto', field: 'adelanto', hidden:true},
-      // {title: 'Mes', field: 'mes', hidden:true},
       {title: 'Número', field: 'numero', width:'50'},
       {title: 'Observación', field: 'observacion',  width:'50'},
       {title: 'Fecha', field: 'fecha', type: 'numeric' ,width:'50' },
@@ -81,7 +81,6 @@ export default function ClientTable() {
         if(param==='unidad'){
           setModalUnidadShow(true)  
         }else{
-          console.log(cuotas)
           setMontoCuota(cuotas.slice(0, cuotas.length)[cuotas.length-1].monto)
           setModalShow(true) 
         }
@@ -101,14 +100,7 @@ export default function ClientTable() {
     let cuota = "http://admidgroup.com/api_rest/index.php/api/cuotasporcliente";
     let variacionmensual = "http://admidgroup.com/api_rest/index.php/api/variacion";
     
-    var config = {
-      idcliente: datacliente.idCliente,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          "Access-Control-Allow-Headers":"X-Requested-With"
-         },}
-
-     var config2 = {
+    var config2 = {
        idunidad: datacliente.idUnidad,
          headers: {
           'Access-Control-Allow-Origin': '*',
@@ -128,9 +120,11 @@ export default function ClientTable() {
   .then(
     axios.spread((...responses) => {
       setUnidad(responses[0].data.unidad[0])
-      if(responses[1].data.status && responses[1].data.cuotas[0].numero!=0){
-        setCuotas(responses[1].data.cuotas)  
-      }
+      setCuotas(responses[1].data.cuotas) 
+      if(responses[1].data.cuotas[0].total==0){
+        console.log("cuota 0")
+        setCuotas([{id_cuota:'', adelanto:'',fecha:'', observacion:'Cuota inicial',numero:'-', monto:responses[1].data.cuotas[0].monto, moneda:responses[1].data.cuotas[0].moneda}]);
+      } 
       setNumeroCuota(parseInt(responses[1].data.cuotas[0].total)+1);
       setVariacion(responses[2].data.variaciones[0].valor);
       setMoneda(responses[1].data.cuotas[0].moneda)
@@ -161,6 +155,24 @@ export default function ClientTable() {
       console.error('There was an error two!', error);
     }
   }  
+
+  const deleteUnidad = async() => {
+    setLoader(true);
+    try{
+      axios.post('http://admidgroup.com/api_rest/index.php/api/eliminarunidad', config2)
+          .then(response => {
+            if(response.data.status){
+            }
+              setLoader(false);
+            })
+          .catch(error => {
+              console.error('There was an error!', error);
+              setLoader(false);
+        });
+    }catch(error){
+      console.error('There was an error two!', error);
+    }
+  }
   
   useEffect(() => {
     if(datacliente.idUnidad!=null){
@@ -201,6 +213,14 @@ export default function ClientTable() {
   <ToastContainer/> 
   <AgregarCuotaModal idunidad={datacliente.idUnidad} numerocuota={numeroCuota} montocuota={montoCuota} moneda={moneda} variacion={variacion} show={modalShow} onHide={() => onHideUpdate()}/>
   <AgregarUnidadModal show={modalUnidadShow} onHide={() => onHideUnidadUpdate()}/>
+  <ConfirmDialog
+    title="Delete Post?"
+    open={true}
+    setOpen={false}
+    onConfirm={false}
+  >
+    Are you sure you want to delete this post?
+  </ConfirmDialog>
    <MaterialTable
       title="Cuotas"
       columns={state.columns}
@@ -208,6 +228,7 @@ export default function ClientTable() {
       isLoading={loader}
       style={{ margin:10}}
         editable={{  
+        isDeleteHidden: rowData => rowData.numero === '-',
         onRowDelete: (oldData) =>
         new Promise((resolve) => {
           handleRowDelete(oldData, resolve)
@@ -247,7 +268,7 @@ export default function ClientTable() {
       })
       }}
       icons={{ 
-        Delete: Eliminar,
+        Delete: Eliminar,        
       }}
     />
       {loader}
@@ -307,6 +328,18 @@ export default function ClientTable() {
     }}
     onClick={(event) => checkIfEmpty(event, 'unidad')}
     startIcon={<Add />}>
+    Unidad funcional
+  </Button>
+  <Button
+    variant="contained"
+    color="secondary"
+    id="unidad"
+    style={{
+      backgroundColor: "#DC004E",
+      margin:'10',
+    }}
+    onClick={(event) => checkIfEmpty(event, 'unidad')}
+    startIcon={<Delete />}>
     Unidad funcional
   </Button>
     </div >

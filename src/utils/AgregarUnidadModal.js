@@ -149,13 +149,18 @@ function AgregarUnidad(props) {
            m2propios: fields.m2_propios,
            m2comunes: fields.m2_comunes,
            m2total:fields.m2_total,
-           moneda: fields.moneda,
+           moneda: simbolo,
+           valor_total:fields.valor_total,
            valor_cuota: fields.valor_cuota,
-           anticipo:fields.anticipo,
-           refuerzo1: fields.refuerzo1,
+           cant_cuotas: fields.cant_cuotas,
+           anticipo:form.anticipo,
+           porcentaje_anticipo:fields.porcentaje_anticipo,
+           refuerzo1: form.refuerzo1,
            fecha_refuerzo1:fields.fecha_refuerzo1,
-           refuerzo2:fields.refuerzo2,
-           fecha_refuerzo2:fields.fecha_refuerzo2,           
+           porcentaje_refuerzo1: fields.porcentaje1,
+           refuerzo2:form.refuerzo2,
+           fecha_refuerzo2:fields.fecha_refuerzo2,    
+           porcentaje_refuerzo2: fields.porcentaje2,       
            cochera:fields.cochera,
            headers: {
              'Access-Control-Allow-Origin': '*',
@@ -197,9 +202,11 @@ return (
         m2_comunes:'',
         m2_total:'',
         moneda:'',
-        valor_cuota:'',
-        anticipo:'',
         valor_total:'',
+        valor_cuota:'',
+        cant_cuotas:'',
+        anticipo:'',
+        porcentaje_anticipo:'',
         refuerzo1:'',
         fecha_refuerzo1:'',
         porcentaje1:'',
@@ -218,16 +225,13 @@ return (
             .required('Obligatorio'),
        valor_cuota: Yup.string()
             .required('Obligatorio'),      
-       anticipo: Yup.string()
-            .required('Obligatorio'), 
-       refuerzo1: Yup.string()
-          .required('Obligatorio'), 
+       anticipo: Yup.string(),
+       refuerzo1: Yup.string(),
        fecha_refuerzo1:Yup
        .date()
        .nullable()
        .required("Data deve ser informada"),
-       refuerzo2: Yup.string()
-            .required('Obligatorio'),  
+       refuerzo2: Yup.string(),
        cochera:Yup.number()
        .integer()
        .default(11) 
@@ -375,8 +379,8 @@ return (
           label="Moneda"
           onChange={handleSimbolo}
            >
-            <MenuItem value="$">$</MenuItem>
-            <MenuItem value="$$">$$</MenuItem>
+            <MenuItem value="0">$</MenuItem>
+            <MenuItem value="1">$$</MenuItem>
         </TextField>
       </div>
       <div className={classes.input }>
@@ -437,6 +441,7 @@ return (
           label="Anticipo"
           type="number"
           name="anticipo"
+          value={form.anticipo}
           disabled={true}
           InputLabelProps={{
             shrink: true,
@@ -512,7 +517,7 @@ return (
                   clearable
                   error={''}
                   label="FECHA"
-                    onChange={value => setFieldValue("fecha_refuerzo1", value)}
+                  onChange={value => setFieldValue("fecha_refuerzo1", value)}
                   KeyboardButtonProps={{
                     "aria-label": "change date"
                   }}
@@ -567,7 +572,7 @@ return (
                   format="MM/dd/yyyy"
                   name="fecha_refuerzo2"
                   value={values.fecha_refuerzo2}
-                  rror={''}
+                  error={''}
                   clearable
                   label="FECHA"
                     onChange={value => setFieldValue("fecha_refuerzo2", value)}

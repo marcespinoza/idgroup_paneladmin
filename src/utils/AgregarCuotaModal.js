@@ -34,7 +34,8 @@ export default function AgregarCuota(props) {
  const [variacionPesos, setVariacionPesos] = useState('')
 
  const handleAdelanto = (event) => {
-  setCheckAdelanto(!checkAdelanto)
+  console.log("ADEL "+event.target.checked)
+  setCheckAdelanto(event.target.checked)
   if(checkAdelanto){
     setAdelanto(0)
     setObservacion('')
@@ -42,6 +43,8 @@ export default function AgregarCuota(props) {
     setAdelanto(1)
     setObservacion('ADELANTO')
   }
+  
+
 };
 
 const handleMonto = (event) => {
@@ -61,7 +64,8 @@ const handleObservacion = (event) => {
 const calcularNuevaCuota = ()=>{
   if(props.numerocuota!==1){
   let porc = Number(props.montocuota) * Number(props.variacion) / 100
-  setVariacionPesos(porc)
+  let porc_fixed = porc.toFixed(2)
+  setVariacionPesos(porc_fixed)
   let nuevo_valor = Number(props.montocuota) + porc
   let nuevo_valor_decimal = nuevo_valor.toFixed(2)
   setMonto(nuevo_valor_decimal)
@@ -96,6 +100,7 @@ useEffect(() => {
        .then(response => {
         console.log(response.data);
           if(response.data.status){
+              setCheckAdelanto(false)
                props.onHide()
              }else{
              }
@@ -127,6 +132,7 @@ useEffect(() => {
         type="checkbox"
         className="mb-2"
         label="Adelanto"
+        checked={checkAdelanto}
         onChange={handleAdelanto}
       />
     </Col>

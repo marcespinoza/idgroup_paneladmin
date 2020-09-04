@@ -19,7 +19,7 @@ export default function TablaCuota()  {
       {title: 'Apellido', field: 'apellido' },
       {title: 'Nombre', field: 'nombre' },
       {title: 'Documento', field: 'documento', type: 'numeric' },
-      {title: 'Direccion', field: 'direccion',lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' }, },
+      {title: 'Direccion', field: 'direccion'},
       {title: 'Telefono', field: 'telefono'},
       {title: 'Fecha nacimiento', field: 'fecha_nacimiento'},
       {title: 'Interes', field: 'interes'},
@@ -57,7 +57,7 @@ export default function TablaCuota()  {
 
 const wrapperFunction = (rowData) => {
   changeInputValue(rowData)
-   setSelectedRow(rowData.id_cliente + rowData.id_unidad)
+  setSelectedRow(rowData.id_cliente + rowData.id_unidad)
 }
 
   return (
