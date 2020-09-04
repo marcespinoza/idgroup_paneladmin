@@ -34,7 +34,6 @@ export default function AgregarCuota(props) {
  const [variacionPesos, setVariacionPesos] = useState('')
 
  const handleAdelanto = (event) => {
-  console.log("ADEL "+event.target.checked)
   setCheckAdelanto(event.target.checked)
   if(checkAdelanto){
     setAdelanto(0)

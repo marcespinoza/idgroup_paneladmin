@@ -47,6 +47,7 @@ export default function ClientTable() {
   const [montoCuota, setMontoCuota] = useState('');
   const {datacliente, dispatch} = useContext(AppContext);
   const [selectedRow, setSelectedRow] = useState(null);
+  const[modalEliminar, setModalEliminar]= useState(false)
 
   const [state, setState] = React.useState({
     columns: [
@@ -80,6 +81,8 @@ export default function ClientTable() {
         //----Verifico que boton fue presionado----//
         if(param==='unidad'){
           setModalUnidadShow(true)  
+        }else if(param==='eliminarunidad'){
+          onShowEliminar(true)
         }else{
           setMontoCuota(cuotas.slice(0, cuotas.length)[cuotas.length-1].monto)
           setModalShow(true) 
@@ -94,6 +97,14 @@ export default function ClientTable() {
 
     const onHideUnidadUpdate = () =>{
       setModalUnidadShow(false)
+    }
+
+    const onHideEliminar = () =>{
+      setModalEliminar(false)
+    }
+
+    const onShowEliminar = () =>{
+      setModalEliminar(true)
     }
 
     let unidadfuncional = "http://admidgroup.com/api_rest/index.php/api/unidadporcliente";
@@ -156,23 +167,7 @@ export default function ClientTable() {
     }
   }  
 
-  const deleteUnidad = async() => {
-    setLoader(true);
-    try{
-      axios.post('http://admidgroup.com/api_rest/index.php/api/eliminarunidad', config2)
-          .then(response => {
-            if(response.data.status){
-            }
-              setLoader(false);
-            })
-          .catch(error => {
-              console.error('There was an error!', error);
-              setLoader(false);
-        });
-    }catch(error){
-      console.error('There was an error two!', error);
-    }
-  }
+  
   
   useEffect(() => {
     if(datacliente.idUnidad!=null){
@@ -214,12 +209,13 @@ export default function ClientTable() {
   <AgregarCuotaModal idunidad={datacliente.idUnidad} numerocuota={numeroCuota} montocuota={montoCuota} moneda={moneda} variacion={variacion} show={modalShow} onHide={() => onHideUpdate()}/>
   <AgregarUnidadModal show={modalUnidadShow} onHide={() => onHideUnidadUpdate()}/>
   <ConfirmDialog
-    title="Delete Post?"
-    open={true}
+    title="Eliminar?"
+    open={modalEliminar}
     setOpen={false}
     onConfirm={false}
-  >
-    Are you sure you want to delete this post?
+    onCancel={() => onHideEliminar()} 
+    idU={datacliente.idUnidad}>
+    Seguro que desea eliminar esta unidad?
   </ConfirmDialog>
    <MaterialTable
       title="Cuotas"
@@ -338,7 +334,7 @@ export default function ClientTable() {
       backgroundColor: "#DC004E",
       margin:'10',
     }}
-    onClick={(event) => checkIfEmpty(event, 'unidad')}
+    onClick={(event) => checkIfEmpty(event, 'eliminarunidad')}
     startIcon={<Delete />}>
     Unidad funcional
   </Button>

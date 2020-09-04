@@ -174,7 +174,6 @@ function AgregarUnidad(props) {
                   console.log(response.data.status);
                 }else{
                 }
-                setLoading(false);
                }
             )
            .catch(error => {

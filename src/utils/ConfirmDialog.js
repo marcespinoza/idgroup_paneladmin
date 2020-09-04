@@ -4,44 +4,54 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { Lion as ButtonLoader } from 'react-button-loaders'
+import axios from "axios";
 
-const ConfirmDialog = (props) => {
+function ConfirmDialog (props) {
 
-  const { title, children, open, setOpen, onConfirm } = props;
-  const [isLoading, setLoading] = React.useState(true)
+  const { title, idunidad, open, children, setOpen, onConfirm, eliminando, onCancel, idU } = props;
+  const [isLoading, setLoading] = React.useState(false)
+
+  const deleteUnidad = () => {
+    setLoading(true)
+    try{
+      axios.post('http://admidgroup.com/api_rest/index.php/api/eliminarunidad', {
+        idunidad: idU,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          "Access-Control-Allow-Headers":"X-Requested-With"
+         },
+      })
+          .then(response => {
+            if(response.data.status){
+              setLoading(false)
+              onCancel()
+            }
+            })
+          .catch(error => {
+              console.error('There was an error!', error);
+              setLoading(false)
+        });
+    }catch(error){
+      console.error('There was an error two!', error);
+    }
+  }
 
   return (
-    <Dialog
+    <Dialog 
       open={open}
-      onClose={() => setOpen(false)}
       aria-labelledby="confirm-dialog"
     >
       <DialogTitle id="confirm-dialog">{title}</DialogTitle>
       <DialogContent>{children}</DialogContent>
       <DialogActions>
-        <Button
-          variant="contained"
-          onClick={() => setOpen(false)}
-          color="secondary"
-        >
-          No
-        </Button>
-        <p>
-                        {!isLoading && (
-                            <button
-                                className="btn btn-danger mr-2"
-                            >
-                                Subscribe
-                            </button>
-                        )}
-                        {isLoading && (
-                            <button className="btn btn-danger mr-2" disabled>
-                                <i className="fas fa-spinner fa-spin"></i>{" "}
-                                Subscribing...
-                            </button>
-                        )}
-                    </p>
+      <button  className="btn btn-secondary mr-2" onClick={onCancel}>
+             NO
+      </button>
+      {!isLoading && (<button className="btn btn-danger mr-2" onClick={()=>deleteUnidad()}>
+                            ELIMINAR
+      </button>)}{isLoading && (<button className="btn btn-danger mr-2" disabled>
+            <i className="fas fa-spinner fa-spin"></i>{" "}
+                ELIMINANDO... </button>)}
       </DialogActions>
     </Dialog>
   );
