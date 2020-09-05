@@ -79,6 +79,14 @@ function Login() {
   const history = useHistory()
   const formRef = useRef();
 
+  const input = (event) => {
+      if (event.key === 'Enter') {
+        console.log(formRef.current)
+        formRef.current.handleSubmit()
+      
+    }
+  }
+
   const getLogin = async(datoslogin) =>{
     try{
       showLoader();
@@ -142,7 +150,7 @@ function Login() {
          </div>
          <div style={{height:40, width:'100%', paddingBottom:'70'}}>
            <div>
-         <Field name="clave" type="password" placeholder="Clave"  className={'form-control' + (errors.clave && touched.clave ? ' is-invalid' : '')} />
+         <Field name="clave" onKeyDown={(evt)=>input(evt)}  type="password" placeholder="Clave"  className={'form-control' + (errors.clave && touched.clave ? ' is-invalid' : '')} />
          </div>
          <ErrorMessage name="clave" component="div" className="invalid-feedback" />
          </div>

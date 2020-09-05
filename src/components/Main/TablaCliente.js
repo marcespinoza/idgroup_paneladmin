@@ -60,6 +60,33 @@ const wrapperFunction = (rowData) => {
   setSelectedRow(rowData.id_cliente + rowData.id_unidad)
 }
 
+const handleRowDelete = (oldData, resolve) => {
+  try{
+      axios.post('http://admidgroup.com/api_rest/index.php/api/eliminarcliente', {
+        idcliente: oldData.id_cliente,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          "Access-Control-Allow-Headers":"X-Requested-With"
+         },
+        })
+       .then(response => {           
+          if(response.data.status){  
+            getClientes()            
+          }else{
+
+          }       
+          resolve()   
+          }
+        )
+        .catch(error => {
+              console.error('There was an error!', error);
+              resolve()
+        });
+    }catch(error){
+      console.error('There was an error two!', error);
+    }    
+}
+
   return (
     <MaterialTable
       title="Clientes"
@@ -81,17 +108,10 @@ const wrapperFunction = (rowData) => {
               }
             }, 600);
           }),
-        onRowDelete: (oldData) =>
+          onRowDelete: (oldData) =>
           new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              setState((prevState) => {
-                const data = [...prevState.data];
-                data.splice(data.indexOf(oldData), 1);
-                return { ...prevState, data };
-              });
-            }, 600);
-          }),
+            handleRowDelete(oldData, resolve)
+          })
       }}
       onRowClick={(event, rowData) =>
         wrapperFunction(rowData)
@@ -106,6 +126,9 @@ const wrapperFunction = (rowData) => {
         },
         body:{
           emptyDataSourceMessage:"No hay registros para mostrar",  
+          editRow:{
+            deleteText:"Seguro que desea eliminar este cliente?"
+          }, 
          }        
       }}
       options={{

@@ -102,8 +102,8 @@ useEffect(() => {
               setCheckAdelanto(false)
                props.onHide()
              }else{
+              setLoading(false);
              }
-             setLoading(false);
             }
             )
         .catch(error => {

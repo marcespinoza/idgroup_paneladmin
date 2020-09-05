@@ -195,7 +195,8 @@ export default function ClientTable() {
             }
           )
           .catch(error => {
-                console.error('There was an error!', error);
+              console.error('There was an error!', error);
+              resolve()
           });
       }catch(error){
         console.error('There was an error two!', error);
