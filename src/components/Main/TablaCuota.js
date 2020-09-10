@@ -107,9 +107,9 @@ export default function ClientTable() {
       setModalEliminar(true)
     }
 
-    let unidadfuncional = "http://admidgroup.com/api_rest/index.php/api/unidadporcliente";
-    let cuota = "http://admidgroup.com/api_rest/index.php/api/cuotasporcliente";
-    let variacionmensual = "http://admidgroup.com/api_rest/index.php/api/variacion";
+    let unidadfuncional = "https://admidgroup.com/api_rest/index.php/api/unidadporcliente";
+    let cuota = "https://admidgroup.com/api_rest/index.php/api/cuotasporcliente";
+    let variacionmensual = "https://admidgroup.com/api_rest/index.php/api/variacion";
     
     var config2 = {
        idunidad: datacliente.idUnidad,
@@ -133,7 +133,6 @@ export default function ClientTable() {
       setUnidad(responses[0].data.unidad[0])
       setCuotas(responses[1].data.cuotas) 
       if(responses[1].data.cuotas[0].total==0){
-        console.log("cuota 0")
         setCuotas([{id_cuota:'', adelanto:'',fecha:'', observacion:'Cuota inicial',numero:'-', monto:responses[1].data.cuotas[0].monto, moneda:responses[1].data.cuotas[0].moneda}]);
       } 
       setNumeroCuota(parseInt(responses[1].data.cuotas[0].total)+1);
@@ -150,7 +149,7 @@ export default function ClientTable() {
   const getCuotas2 = async() =>{
     setLoader(true);
     try{
-      axios.post('http://admidgroup.com/api_rest/index.php/api/cuotasporcliente', config2)
+      axios.post('https://admidgroup.com/api_rest/index.php/api/cuotasporcliente', config2)
           .then(response => {
             if(response.data.status){
               setCuotas(response.data.cuotas)
@@ -177,7 +176,7 @@ export default function ClientTable() {
 
   const handleRowDelete = (oldData, resolve) => {
     try{
-        axios.post('http://admidgroup.com/api_rest/index.php/api/eliminarcuota', {
+        axios.post('https://admidgroup.com/api_rest/index.php/api/eliminarcuota', {
           idcuota: oldData.id_cuota,
           headers: {
             'Access-Control-Allow-Origin': '*',
@@ -304,6 +303,7 @@ export default function ClientTable() {
   </Row>
   </Card>
     <Button
+    disabled={datacliente.idUnidad==null}
     variant="contained"
     color="primary"
     id="cuota"
@@ -328,6 +328,7 @@ export default function ClientTable() {
     Unidad funcional
   </Button>
   <Button
+    disabled={datacliente.idUnidad==null}
     variant="contained"
     color="secondary"
     id="unidad"

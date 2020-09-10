@@ -29,12 +29,6 @@ const useStyles = makeStyles((theme) => ({
     background:'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
   },
 }));
-
-     const images = [
-      { source: "http://admidgroup.com/api_rest/imagenes_variacion_mensual/variacionabril.png" },
-      { source: "http://admidgroup.com/api_rest/imagenes_variacion_mensual/variacionabril.png" },
-      { source: "http://admidgroup.com/api_rest/imagenes_variacion_mensual/variacionmayo.png" },
-  ];
 export default function SingleLineGridList() {
 
   const classes = useStyles();
@@ -43,7 +37,7 @@ export default function SingleLineGridList() {
 
   const getVariacionimagenes = async() =>{
     try{
-      axios.get('http://admidgroup.com/api_rest/index.php/api/getimages')
+      axios.get('https://admidgroup.com/api_rest/index.php/api/getimages')
           .then(response => {             
                 
                 Object.keys(response.data.variaciones).forEach(key => imagen.push({source: response.data.variaciones[key]}))

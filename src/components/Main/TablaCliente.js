@@ -37,7 +37,7 @@ export default function TablaCuota()  {
   const getClientes = async() =>{
     setLoader(true)
     try{
-      axios.get('http://admidgroup.com/api_rest/index.php/api/clientes')
+      axios.get('https://admidgroup.com/api_rest/index.php/api/clientes')
           .then(response => {             
               setClientes(response.data.clientes)
               setLoader(false);
@@ -62,7 +62,7 @@ const wrapperFunction = (rowData) => {
 
 const handleRowDelete = (oldData, resolve) => {
   try{
-      axios.post('http://admidgroup.com/api_rest/index.php/api/eliminarcliente', {
+      axios.post('https://admidgroup.com/api_rest/index.php/api/eliminarcliente', {
         idcliente: oldData.id_cliente,
         headers: {
           'Access-Control-Allow-Origin': '*',

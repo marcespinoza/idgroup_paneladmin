@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import Input from '@material-ui/core/Input';
+import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import Typography from '@material-ui/core/Typography';
@@ -18,19 +18,10 @@ import useFullPageLoader from '../../hooks/useFullPageLoader';
 import {useHistory} from 'react-router-dom'
 import * as Yup from 'yup';
 import { Box } from '@material-ui/core'
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://www.inversionesidgroup.com/">
-        InversionesIdGroup
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -75,9 +66,13 @@ function Login() {
   const classes = useStyles();
   const [loader, showLoader, hideLoader] = useFullPageLoader();
   const [showlabel, setLabel] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
   const [opacidad, setOpacidad] = useState(0);
   const history = useHistory()
   const formRef = useRef();
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword)
+  };
 
   const input = (event) => {
       if (event.key === 'Enter') {
@@ -90,7 +85,7 @@ function Login() {
   const getLogin = async(datoslogin) =>{
     try{
       showLoader();
-      axios.post('http://admidgroup.com/api_rest/index.php/api/loginusuario', {
+      axios.post('https://admidgroup.com/api_rest/index.php/api/loginusuario', {
         usuario: datoslogin.usuario,
         clave: datoslogin.clave,
         headers: {
@@ -132,7 +127,7 @@ function Login() {
        getLogin(fields)
     }}
 >
-    {({ values, errors, status, touched, handleSubmit }) => (
+    {({ values, errors, handleChange, touched, handleSubmit }) => (
           <>
 
     <Form>
@@ -145,12 +140,30 @@ function Login() {
          </Box>
          <div style={{height:40, width:'100%', paddingBottom:'70'}}>
 
-         <Field name="usuario" type="text" placeholder="Usuario"  className={'form-control' + (errors.usuario && touched.usuario ? ' is-invalid' : '')} />         
+         <Input name="usuario" type="text" placeholder="Usuario"           onChange={handleChange}
+         className={'form-control' + (errors.usuario && touched.usuario ? ' is-invalid' : '')} />         
          <ErrorMessage name="usuario" component="div" className="invalid-feedback" />
          </div>
          <div style={{height:40, width:'100%', paddingBottom:'70'}}>
            <div>
-         <Field name="clave" onKeyDown={(evt)=>input(evt)}  type="password" placeholder="Clave"  className={'form-control' + (errors.clave && touched.clave ? ' is-invalid' : '')} />
+         <Input name="clave" onKeyDown={(evt)=>input(evt)}   placeholder="Clave"  
+                   onChange={handleChange}
+
+         className={'form-control' + (errors.clave && touched.clave ? ' is-invalid' : '')} 
+         type={showPassword ? 'text' : 'password'}
+         endAdornment={
+          <InputAdornment position="end">
+            <IconButton
+              aria-label="toggle password visibility"
+              onClick={handleClickShowPassword}
+              edge="end"
+
+            >
+              {showPassword ? <VisibilityOff /> : <VisibilityOff />}
+            </IconButton>
+          </InputAdornment>
+        }
+         />
          </div>
          <ErrorMessage name="clave" component="div" className="invalid-feedback" />
          </div>

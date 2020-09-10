@@ -201,12 +201,13 @@ return (
             .required('Obligatorio'),
        valor_cuota: Yup.string()
             .required('Obligatorio'),      
+       cant_cuotas: Yup.string()
+            .required('Obligatorio'),
        anticipo: Yup.string(),
        refuerzo1: Yup.string(),
        fecha_refuerzo1:Yup
        .date()
-       .nullable()
-       .required("Data deve ser informada"),
+       .required("Obligatorio"),
        refuerzo2: Yup.string(),
        cochera:Yup.number()
        .integer()
@@ -485,13 +486,14 @@ return (
         <div className={classes.input }>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
-                m={-10}
+                  m={-10}
                   id="date-picker-dialog"
                   format="MM/dd/yyyy"
                   name="fecha_refuerzo1"
                   value={values.fecha_refuerzo1}
                   clearable
-                  error={''}
+                  helperText={false}
+                  error={false}
                   label="FECHA"
                   onChange={value => setFieldValue("fecha_refuerzo1", value)}
                   KeyboardButtonProps={{
@@ -548,7 +550,8 @@ return (
                   format="MM/dd/yyyy"
                   name="fecha_refuerzo2"
                   value={values.fecha_refuerzo2}
-                  error={''}
+                  helperText={false}
+                  error={false}
                   clearable
                   label="FECHA"
                     onChange={value => setFieldValue("fecha_refuerzo2", value)}

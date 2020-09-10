@@ -30,7 +30,7 @@ export const AppContext = React.createContext();
 
 const initialState = {
   idCliente: '',
-  idUnidad:'',
+  idUnidad:null,
 };
 
 function reducer(state, action) {
