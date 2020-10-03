@@ -14,7 +14,7 @@ function ConfirmDialog (props) {
   const deleteUnidad = () => {
     setLoading(true)
     try{
-      axios.post('http://admidgroup.com/api_rest/index.php/api/eliminarunidad', {
+      axios.post('https://admidgroup.com/api_rest/index.php/api/eliminarunidad', {
         idunidad: idU,
         headers: {
           'Access-Control-Allow-Origin': '*',

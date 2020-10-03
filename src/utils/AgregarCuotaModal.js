@@ -5,10 +5,10 @@ import { InputLabel } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from "axios";
 import moment from "moment";
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
+import NativeSelect from '@material-ui/core/NativeSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField'
+import Select from 'react-select';
+
 
 const useStyles = makeStyles((theme) => ({
     input: {
@@ -32,6 +32,7 @@ export default function AgregarCuota(props) {
  const [adelanto, setAdelanto] = useState(0)
  const [observacion, setObservacion] = useState("")
  const [variacionPesos, setVariacionPesos] = useState('')
+ const [moneda, setMoneda] = useState('')
 
  const handleAdelanto = (event) => {
   setCheckAdelanto(event.target.checked)
@@ -41,10 +42,22 @@ export default function AgregarCuota(props) {
   }else{
     setAdelanto(1)
     setObservacion('ADELANTO')
-  }
-  
-
+  }  
 };
+
+const style = {
+  control: base => ({
+    ...base,
+    border: 0,
+    // This line disable the blue border
+    boxShadow: 'none'
+  })
+};
+
+const monedas = [
+  { value: 0, label: '$' },
+  { value: 1, label: 'USD' }
+];
 
 const handleMonto = (event) => {
   if(event.target.value===""){
@@ -54,20 +67,32 @@ const handleMonto = (event) => {
     setEmptyInput(false)
     setMonto(event.target.value)
   }
-  console.log(event.target.value)
 };
 const handleObservacion = (event) => {
   setObservacion(event.target.value)
 };
 
 const calcularNuevaCuota = ()=>{
+  //Si es la cuota numero 1 no aplico variacion
   if(props.numerocuota!==1){
-  let porc = Number(props.montocuota) * Number(props.variacion) / 100
-  let porc_fixed = porc.toFixed(2)
-  setVariacionPesos(porc_fixed)
-  let nuevo_valor = Number(props.montocuota) + porc
-  let nuevo_valor_decimal = nuevo_valor.toFixed(2)
-  setMonto(nuevo_valor_decimal)
+    //Si la moneda es en dolares no aplico variacion
+    if(props.moneda!=1){
+      //Si es adelanto de cuota no aplico variacion
+      if(!checkAdelanto){
+        let porc = Number(props.montocuota) * Number(props.variacion) / 100
+        let porc_fixed = porc.toFixed(2)
+        setVariacionPesos(porc_fixed)
+        let nuevo_valor = Number(props.montocuota) + porc
+        let nuevo_valor_decimal = nuevo_valor.toFixed(2)
+        setMonto(nuevo_valor_decimal)
+        setEmptyInput(false)
+      }else{
+        setMonto(props.montocuota)
+        setVariacionPesos(0)
+      }
+  }else{
+    setMonto(props.montocuota)
+  }
 }else{
   setMonto(props.montocuota)
 }
@@ -77,12 +102,15 @@ useEffect(() => {
   calcularNuevaCuota()
 }, [props]);
 
+useEffect(() => {
+  calcularNuevaCuota()
+}, [checkAdelanto]);
+
 
  const agregarCuota = async(id_cli) =>{
-   console.log("ADEL "+adelanto)
    setLoading(true);
     try{
-      axios.post('http://admidgroup.com/api_rest/index.php/api/agregarcuota', {
+      axios.post('https://admidgroup.com/api_rest/index.php/api/agregarcuota', {
         idunidad: props.idunidad,
         fecha: fecha,
         nrocuota: props.numerocuota,
@@ -97,12 +125,11 @@ useEffect(() => {
          },
         })
        .then(response => {
-        console.log(response.data);
+         setLoading(false)
           if(response.data.status){
               setCheckAdelanto(false)
                props.onHide()
              }else{
-              setLoading(false);
              }
             }
             )
@@ -152,7 +179,12 @@ useEffect(() => {
                  </div>
                  <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Moneda</InputLabel>
-                 <Input value= {props.moneda == '0'? '$$': '$' } onChange={(evt) => {setMonto(evt.target.value); }}/>
+                 <Select
+                   value={monedas.filter(value => value.value == props.moneda)}
+                   options={monedas}
+                   styles={style}
+                />
+                 {/* <Input value= {props.moneda==1?"USD":"$"} onChange={(evt) => {setMonto(evt.target.value); }}/> */}
                  </div>
                  <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Monto</InputLabel>

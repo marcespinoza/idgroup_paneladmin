@@ -30,7 +30,7 @@ export default function TablaVariacion()  {
   const getVariacion = async() =>{
     setLoader(true);
     try{
-      axios.get('http://admidgroup.com/api_rest/index.php/api/variacion')
+      axios.get('https://admidgroup.com/api_rest/index.php/api/variacion')
           .then(response => {
               setVariacion(response.data.variaciones)
               setLoader(false);
@@ -158,7 +158,10 @@ export default function TablaVariacion()  {
         fontFamily:'Roboto',
         fontWeight: 900,
         color:'#DCDCDC'
-      }
+      },
+      rowStyle: rowData => ({
+        fontSize:13
+      })
       }}
       icons={{ 
         Delete: Eliminar,

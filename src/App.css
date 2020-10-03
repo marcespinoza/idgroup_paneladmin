@@ -120,3 +120,32 @@
 
   --slider-height-percentage: 66%;
   }
+
+  .cardrow {
+    flex:1;
+    flex-direction:'column';
+  }
+  @media  (min-width: 2000px) {
+  .itemcardtitle{
+      display: flex;
+      align-items: center;
+      justify-content: center;    
+      font-family:'roboto_black'; 
+      font-size: 16;
+  }
+}
+
+@media  (min-width: 1000px) {
+  .itemcardtitle{
+      display: flex;
+      align-items: center;
+      justify-content: center;    
+      font-family:'roboto_black'; 
+      font-size: 12;
+  }
+}
+  .itemcard{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }

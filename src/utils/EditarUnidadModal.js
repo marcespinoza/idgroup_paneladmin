@@ -2,6 +2,7 @@ import React, {useState, useRef, useEffect} from 'react';
 import './popup.css';  
 import TextField from '@material-ui/core/TextField';
 import axios from "axios";
+import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import 'react-toastify/dist/ReactToastify.css';
 import {Modal, Button, Form as Formr} from 'react-bootstrap';
@@ -85,17 +86,6 @@ function AgregarUnidad(props) {
     setState({ ...form,  ["refuerzo2"]: ref1 })
   }
 
-  const handleSumatoriaMetros = (evt, param) => {
-    let ref1
-    if(param=="propios"){
-      ref1 = Number(evt.target.value) + Number(formRef.current.values.m2_comunes)
-    }else{
-      ref1 = Number(evt.target.value) + Number(formRef.current.values.m2_propios)
-    }
-   
-    setState({ ...form,  ["m2_total"]: ref1 })
-  }
-
   const handleValorTotal = (evt)=>{
     let value = evt.target.value
     let porc1 = (value * Number(formRef.current.values.porcentaje1))/100 
@@ -153,8 +143,11 @@ function AgregarUnidad(props) {
             },
            })
           .then(response => {
+           console.log(response);
+
              if(response.data.status){
                   props.onHide()
+                  console.log(response.data.status);
                 }else{
 
                 }
@@ -179,11 +172,11 @@ return (
 <div>
 <Formik
     initialValues={{
-        ubicacion: '',
-        unidad: '',
-        dormitorios:'',
-        m2_propios:'',
-        m2_comunes:'',
+        ubicacion: "22",
+        unidad: props.unidad.unidad,
+        dormitorios:props.unidad.dormitorios,
+        m2_propios:props.unidad.m2_propios,
+        m2_comunes:'25',
         m2_total:'',
         moneda:'',
         valor_total:'',
@@ -263,7 +256,8 @@ return (
           id="standard-number"
           label="Ubicacion"
           name="ubicacion"
-          value={values.ubicacion}
+          type="number"
+          value={parseInt(values.ubicacion)}
           InputLabelProps={{
             shrink: true,
           }}
@@ -318,7 +312,7 @@ return (
           InputLabelProps={{
             shrink: true,
           }}
-          onChange={evt => {handleChange(evt); handleSumatoriaMetros(evt, 'propios')}}
+          onChange={handleChange}
           onBlur={handleBlur}
           InputProps={{ inputProps: { min: 0 } }}
           className={ 'form-control' + (errors.m2_propios && touched.m2_propios ? ' is-invalid' : '')}
@@ -334,7 +328,7 @@ return (
           InputLabelProps={{
             shrink: true,
           }}
-          onChange={evt => {handleChange(evt); handleSumatoriaMetros(evt, 'comunes')}}
+          onChange={handleChange}
           onBlur={handleBlur}
           InputProps={{ inputProps: { min: 0 } }}
           className={'form-control' + (errors.m2_comunes && touched.m2_comunes ? ' is-invalid' : '')}
@@ -347,7 +341,6 @@ return (
           label="Total"
           type="number"
           name="m2_total"
-          value={form.m2_total}
           InputLabelProps={{
             shrink: true,
           }}
@@ -365,7 +358,8 @@ return (
           select
           style={{width:100}}
           label="Moneda"
-          onChange={handleSimbolo} >
+          onChange={handleSimbolo}
+           >
             <MenuItem value="0">$</MenuItem>
             <MenuItem value="1">USD</MenuItem>
         </TextField>
@@ -498,7 +492,7 @@ return (
                 <KeyboardDatePicker
                   m={-10}
                   id="date-picker-dialog"
-                  format="dd/MM/yyyy"
+                  format="MM/dd/yyyy"
                   name="fecha_refuerzo1"
                   value={values.fecha_refuerzo1}
                   clearable
@@ -557,14 +551,14 @@ return (
                 <KeyboardDatePicker
                 m={-10}
                   id="date-picker-dialog"
-                  format="dd/MM/yyyy"
+                  format="MM/dd/yyyy"
                   name="fecha_refuerzo2"
                   value={values.fecha_refuerzo2}
                   helperText={false}
                   error={false}
                   clearable
                   label="FECHA"
-                  onChange={value => setFieldValue("fecha_refuerzo2", value)}
+                    onChange={value => setFieldValue("fecha_refuerzo2", value)}
                   KeyboardButtonProps={{
                     "aria-label": "change date"
                   }}

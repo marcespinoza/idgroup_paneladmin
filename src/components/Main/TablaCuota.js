@@ -2,40 +2,25 @@ import React, {useEffect, useContext, useState} from 'react';
 import MaterialTable from 'material-table';
 import {Editar, Eliminar} from './../../utils/Icons.js'
 import axios from "axios";
-import { makeStyles } from '@material-ui/core/styles';
+import './../../App.css'
 import { AppContext } from './../Main/HeaderMain'
 import Add from '@material-ui/icons/Add';
 import Delete from '@material-ui/icons/Remove';
+import Edit from '@material-ui/icons/Edit';
 import Button from '@material-ui/core/Button'
 import AgregarCuotaModal from './../../utils/AgregarCuotaModal'
 import AgregarUnidadModal from '../../utils/AgregarUnidadModal'
+import EditarUnidadModal from '../../utils/EditarUnidadModal'
 import {toast, ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import {Row, Col, Container} from 'react-bootstrap'
 import Card from '@material-ui/core/Card';
 import ConfirmDialog from './../../utils/ConfirmDialog'
 
-const useStyles = makeStyles((theme) => ({
-  cardrow: {
-    flex:1,
-    flexDirection:'column'
-  },
-  itemcardtitle:{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',     
-      fontFamily:'roboto_black'   
-  },
-  itemcard:{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-  }
-}));
+
 
 export default function ClientTable() {  
 
-  const classes = useStyles();
   const [loader, setLoader] = useState(false);
   const [cuotas, setCuotas] = useState([]);
   const [numeroCuota, setNumeroCuota] = useState('');
@@ -43,6 +28,7 @@ export default function ClientTable() {
   const [moneda, setMoneda] = useState('');
   const [modalShow, setModalShow] = useState(false);
   const [modalUnidadShow, setModalUnidadShow] = useState(false);
+  const [modalEditarUnidadShow, setModalEditarUnidadShow] = useState(false);
   const [unidad, setUnidad]= useState({ubicacion:'-', unidad:'-', dormitorios:'-', m2_propios:'-', m2_comunes:'-',total_m2:'-'});
   const [montoCuota, setMontoCuota] = useState('');
   const {datacliente, dispatch} = useContext(AppContext);
@@ -57,17 +43,19 @@ export default function ClientTable() {
       {title: 'Observación', field: 'observacion',  width:'50'},
       {title: 'Fecha', field: 'fecha', type: 'numeric' ,width:'50' },
       {title: 'Monto', field: 'monto', width:'50',  },
-      {title: 'Moneda', field: 'moneda', width:'50' },
+      {title: 'Moneda', field: 'moneda', width:'50',render: rowData => {if(rowData.moneda==1){return "USD"}else{return "$"}} },
     ],
     
   }); 
-  
+
     const changeInputValue = (newValue) => {
         dispatch({ type: 'UPDATE_INPUT', data: newValue,});
     };
 
     
     const checkIfEmpty = (e, param) => {
+      console.log(cuotas)
+
       if(cuotas.length===0 && datacliente.idCliente===''){
         toast.error('Seleccione un cliente antes de agregar una cuota', {
           position: "bottom-center",
@@ -80,7 +68,9 @@ export default function ClientTable() {
       }else{
         //----Verifico que boton fue presionado----//
         if(param==='unidad'){
-          setModalUnidadShow(true)  
+          setModalUnidadShow(true)
+        }else if(param=="editarunidad"){
+          setModalEditarUnidadShow(true)
         }else if(param==='eliminarunidad'){
           onShowEliminar(true)
         }else{
@@ -97,6 +87,10 @@ export default function ClientTable() {
 
     const onHideUnidadUpdate = () =>{
       setModalUnidadShow(false)
+    }
+
+    const onHideEditarUnidadUpdate = () =>{
+      setModalEditarUnidadShow(false)
     }
 
     const onHideEliminar = () =>{
@@ -130,6 +124,8 @@ export default function ClientTable() {
     axios.all([requestOne, requestTwo, requestThree])
   .then(
     axios.spread((...responses) => {
+      console.log(datacliente.idUnidad)
+
       setUnidad(responses[0].data.unidad[0])
       setCuotas(responses[1].data.cuotas) 
       if(responses[1].data.cuotas[0].total==0){
@@ -142,6 +138,7 @@ export default function ClientTable() {
     })
   )
   .catch(errors => {
+    console.log("error"+errors)
     setLoader(false);
   });
   }  
@@ -207,7 +204,8 @@ export default function ClientTable() {
   <div style={{flexDirection:'column', width:'100%'}}>  
   <ToastContainer/> 
   <AgregarCuotaModal idunidad={datacliente.idUnidad} numerocuota={numeroCuota} montocuota={montoCuota} moneda={moneda} variacion={variacion} show={modalShow} onHide={() => onHideUpdate()}/>
-  <AgregarUnidadModal show={modalUnidadShow} onHide={() => onHideUnidadUpdate()}/>
+  <AgregarUnidadModal show={modalUnidadShow} onHide={() => onHideUnidadUpdate()} idcliente={datacliente.idCliente} />
+  {/* <EditarUnidadModal show={modalEditarUnidadShow} onHide={() => onHideEditarUnidadUpdate()} unidad={unidad} /> */}
   <ConfirmDialog
     title="Eliminar?"
     open={modalEliminar}
@@ -260,7 +258,8 @@ export default function ClientTable() {
           color:'#DCDCDC'
       },
       rowStyle: rowData => ({
-        backgroundColor: (rowData.adelanto === "1") ? '#C0FF9A' : '#FFF'
+        backgroundColor: (rowData.adelanto === "1") ? '#C0FF9A' : '#FFF',
+        fontSize:13
       })
       }}
       icons={{ 
@@ -270,37 +269,37 @@ export default function ClientTable() {
       {loader}
   <Card border="dark" style={{margin:10}}>
   <Row style={{backgroundColor:'#20b1e8'}}>
-    <Col className={classes.itemcardtitle}>UBICACION </Col>
-    <Col className={classes.itemcardtitle}>UNIDAD </Col>
-    <Col className={classes.itemcardtitle}>DORMITORIOS </Col>
-    <Col className={classes.itemcardtitle}>M2 PROPIOS </Col>
-    <Col className={classes.itemcardtitle}>M2 COMUNES </Col>
-    <Col className={classes.itemcardtitle}>TOTAL M2 </Col>
+    <Col className="itemcardtitle">UBICACION </Col>
+    <Col className="itemcardtitle">UNIDAD </Col>
+    <Col className="itemcardtitle">DORMITORIOS </Col>
+    <Col className="itemcardtitle">M2 PROPIOS </Col>
+    <Col className="itemcardtitle">M2 COMUNES </Col>
+    <Col className="itemcardtitle">TOTAL M2 </Col>
   </Row>
-  <Row >
-    <Col className={classes.itemcard}>{unidad.ubicacion}</Col>
-    <Col className={classes.itemcard}>{unidad.unidad}</Col>
-    <Col className={classes.itemcard}>{unidad.dormitorios}</Col>
-    <Col className={classes.itemcard}>{unidad.m2_propios}</Col>
-    <Col className={classes.itemcard}>{unidad.m2_comunes}</Col>
-    <Col className={classes.itemcard}>{unidad.total_m2}</Col>
+   <Row >
+    <Col className="itemcard">{unidad.ubicacion}</Col>
+    <Col className="itemcard">{unidad.unidad}</Col>
+    <Col className="itemcard">{unidad.dormitorios}</Col>
+    <Col className="itemcard">{unidad.m2_propios}</Col>
+    <Col className="itemcard">{unidad.m2_comunes}</Col>
+    <Col className="itemcard">{unidad.total_m2}</Col>
   </Row>
   <Row style={{backgroundColor:'#20b1e8'}}>
-    <Col className={classes.itemcardtitle}>ANTICIPO</Col>
-    <Col className={classes.itemcardtitle}>1° REFUERZO</Col>
-    <Col className={classes.itemcardtitle}>FECHA</Col>
-    <Col className={classes.itemcardtitle}>2° REFUERZO</Col>
-    <Col className={classes.itemcardtitle}>FECHA</Col>
-    <Col className={classes.itemcardtitle}>NRO. COCHERA</Col>
+    <Col className="itemcardtitle">ANTICIPO</Col>
+    <Col className="itemcardtitle">1° REFUERZO</Col>
+    <Col className="itemcardtitle">FECHA</Col>
+    <Col className="itemcardtitle">2° REFUERZO</Col>
+    <Col className="itemcardtitle">FECHA</Col>
+    <Col className="itemcardtitle">N° COCHERA</Col>
   </Row>
   <Row >
-    <Col className={classes.itemcard}>{unidad.anticipo}</Col>
-    <Col className={classes.itemcard}>{unidad.refuerzo1}</Col>
-    <Col className={classes.itemcard}>{unidad.fecha_refuerzo1}</Col>
-    <Col className={classes.itemcard}>{unidad.refuerzo2}</Col>
-    <Col className={classes.itemcard}>{unidad.fecha_refuerzo2}</Col>
-    <Col className={classes.itemcard}>{unidad.cochera}</Col>
-  </Row>
+    <Col className="itemcard">{unidad.anticipo}</Col>
+    <Col className="itemcard">{unidad.refuerzo1}</Col>
+    <Col className="itemcard">{unidad.fecha_refuerzo1}</Col>
+    <Col className="itemcard">{unidad.refuerzo2}</Col>
+    <Col className="itemcard">{unidad.fecha_refuerzo2}</Col>
+    <Col className="itemcard">{unidad.cochera}</Col>
+  </Row> 
   </Card>
     <Button
     disabled={datacliente.idUnidad==null}
@@ -316,6 +315,7 @@ export default function ClientTable() {
     Cuota
   </Button>
   <Button
+    disabled={datacliente.idUnidad!=null}
     variant="contained"
     color="primary"
     id="unidad"
@@ -325,7 +325,7 @@ export default function ClientTable() {
     }}
     onClick={(event) => checkIfEmpty(event, 'unidad')}
     startIcon={<Add />}>
-    Unidad funcional
+    Unidad
   </Button>
   <Button
     disabled={datacliente.idUnidad==null}
@@ -333,13 +333,26 @@ export default function ClientTable() {
     color="secondary"
     id="unidad"
     style={{
-      backgroundColor: "#DC004E",
+      backgroundColor: "#FE7676",
       margin:'10',
     }}
     onClick={(event) => checkIfEmpty(event, 'eliminarunidad')}
     startIcon={<Delete />}>
-    Unidad funcional
+    Unidad
   </Button>
+  {/* <Button
+    disabled={datacliente.idUnidad==null}
+    variant="contained"
+    color="primary"
+    id="unidad"
+    style={{
+      backgroundColor: "#297E22",
+      margin:'10',
+    }}
+    onClick={(event) => checkIfEmpty(event, 'editarunidad')}
+    startIcon={<Edit />}>
+    Unidad
+  </Button> */}
     </div >
   );
 }

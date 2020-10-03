@@ -21,8 +21,8 @@ export default function TablaCuota()  {
       {title: 'Documento', field: 'documento', type: 'numeric' },
       {title: 'Direccion', field: 'direccion'},
       {title: 'Telefono', field: 'telefono'},
-      {title: 'Fecha nacimiento', field: 'fecha_nacimiento'},
-      {title: 'Interes', field: 'interes'},
+      {title: 'Fch. nacimiento', field: 'fecha_nacimiento'},
+      {title: 'Interes', field: 'interes',  render: rowData => rowData.interes},
       {title: 'Ocupacion', field: 'ocupacion'},
       {title: 'Correo', field: 'correo'},
     ],
@@ -39,6 +39,7 @@ export default function TablaCuota()  {
     try{
       axios.get('https://admidgroup.com/api_rest/index.php/api/clientes')
           .then(response => {             
+            console.log(response.data.clientes.apellido+"LCI")
               setClientes(response.data.clientes)
               setLoader(false);
             })
@@ -134,13 +135,17 @@ const handleRowDelete = (oldData, resolve) => {
       options={{
         pageSize:3,
          headerStyle: {
-        backgroundColor: '#323232',
-        fontFamily:'Roboto',
-        fontWeight: 900,
-        color:'#DCDCDC'
-      },
+         backgroundColor: '#323232',
+         fontFamily:'Roboto',
+         fontWeight: 900,
+         paddingTop:2,
+         paddingBottom:2,
+         color:'#DCDCDC'
+        },
+        
       rowStyle: rowData => ({
-        backgroundColor: (selectedRow === rowData.id_cliente + rowData.id_unidad) ? '#EEE' : '#FFF'
+        backgroundColor: (selectedRow === rowData.id_cliente + rowData.id_unidad) ? '#EEE' : '#FFF',
+        fontSize:14
       })
       }}
       icons={{ 
