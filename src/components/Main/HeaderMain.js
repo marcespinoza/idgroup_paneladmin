@@ -13,6 +13,9 @@ import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import Popup from './../../utils/Popup'
 import ImagenVariacion from './../Main/ImagenVariacion'
 import TablaVariacion from './../Main/TablaVariacion'
+import Calendar from '@material-ui/icons/CalendarToday';
+import axios from "axios";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,12 +57,32 @@ export default function ButtonAppBar() {
   const classes = useStyles();
   const [cliente, setIdCliente] = useState("");
   const[showpopup, setShowpopup] = useState(false)
+
   const showPopUp = () => {
     setShowpopup(true);
   };
   const closePopUp = () => {
     setShowpopup(false);
   };
+
+  const obtenerCalendario = () =>{
+    try{
+      axios.get('https://admidgroup.com/api_rest/index.php/api/exportcsv')
+          .then(response => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'calendario.csv'); //or any other extension
+            document.body.appendChild(link);
+            link.click();
+            })
+          .catch(error => {
+              console.error('There was an error!', error);
+        });
+    }catch(error){
+      console.error('There was an error two!', error);
+    }
+  }
   
 const [datacliente, dispatch] = useReducer(reducer, initialState);
 
@@ -67,12 +90,12 @@ const [datacliente, dispatch] = useReducer(reducer, initialState);
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar style={{backgroundColor:'#20b1e8'}}>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
           <Typography variant="h6" className={classes.title}>
             Panel de administración
           </Typography>
+          <IconButton color="primary" aria-label="upload picture" onClick={obtenerCalendario} component="span">
+          <Calendar />
+        </IconButton>
           <IconButton color="primary" aria-label="upload picture" onClick={showPopUp} component="span">
           <PhotoCamera />
         </IconButton>
