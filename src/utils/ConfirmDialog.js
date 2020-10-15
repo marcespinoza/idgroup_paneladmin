@@ -39,7 +39,7 @@ function ConfirmDialog (props) {
   return (
     <Dialog 
       open={open}
-      aria-labelledby="confirm-dialog"
+    //  aria-labelledby="confirm-dialog"
     >
       <DialogTitle id="confirm-dialog">{title}</DialogTitle>
       <DialogContent>{children}</DialogContent>

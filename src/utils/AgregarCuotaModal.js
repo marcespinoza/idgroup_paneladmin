@@ -10,14 +10,14 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Select from 'react-select';
 
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles ({
     input: {
       display:'flex',
       flexDirection:'column',
       margin:5,
       width:140
     }
-  }));
+  });
 
 
 export default function AgregarCuota(props) {
@@ -144,7 +144,7 @@ useEffect(() => {
       <Modal
         {...props}
         size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
+        //aria-labelledby="contained-modal-title-vcenter"
         centered>
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -188,7 +188,9 @@ useEffect(() => {
                  </div>
                  <div className={classes.input}>
                  <InputLabel htmlFor="input-with-icon-adornment">Monto</InputLabel>
-                 <Input error={emptyInput} value={monto} onChange={(evt) => {handleMonto(evt) }}  aria-describedby="component-error-text"/>
+                 <Input error={emptyInput} value={monto} onChange={(evt) => {handleMonto(evt) }}  
+               //  aria-describedby="component-error-text"
+                 />
                  {emptyInput ? (
                  <FormHelperText error id="component-error-text">* Obligatorio</FormHelperText>
                   ) : <div  style={{visibility:'hidden'}}>error</div>}              

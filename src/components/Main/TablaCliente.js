@@ -53,7 +53,7 @@ export default function TablaCuota()  {
   }            
   
   const changeInputValue = (newValue) => {
-    dispatch({ type: 'MARCELO', data: newValue,});
+   dispatch({ type: 'MARCELO', data: newValue,});
 };
 
 const wrapperFunction = (rowData) => {

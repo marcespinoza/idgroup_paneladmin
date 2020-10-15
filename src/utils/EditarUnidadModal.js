@@ -226,7 +226,7 @@ return (
 
     <Modal
         {...props}
-        aria-labelledby="contained-modal-title-vcenter"
+      //  aria-labelledby="contained-modal-title-vcenter"
         centered>
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -500,9 +500,9 @@ return (
                   error={false}
                   label="FECHA"
                   onChange={value => setFieldValue("fecha_refuerzo1", value)}
-                  KeyboardButtonProps={{
-                    "aria-label": "change date"
-                  }}
+                  // KeyboardButtonProps={{
+                  //   "aria-label": "change date"
+                  // }}
                   InputLabelProps={{ shrink: true }}
                   className={'form-control' + (errors.fecha_refuerzo1 && touched.fecha_refuerzo1 ? ' is-invalid' : '')}
                 />
@@ -559,9 +559,9 @@ return (
                   clearable
                   label="FECHA"
                     onChange={value => setFieldValue("fecha_refuerzo2", value)}
-                  KeyboardButtonProps={{
-                    "aria-label": "change date"
-                  }}
+                  // KeyboardButtonProps={{
+                  //   "aria-label": "change date"
+                  // }}
                   InputLabelProps={{ shrink: true }}
                   className={'form-control' + (errors.fecha_refuerzo2 && touched.fecha_refuerzo2 ? ' is-invalid' : '')}
                 />

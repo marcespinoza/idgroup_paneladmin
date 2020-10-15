@@ -8,7 +8,6 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import TablaCliente from './TablaCliente';
 import TablaCuota from './TablaCuota';
-import CardDetalle from './CardDetalle';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import Popup from './../../utils/Popup'
 import ImagenVariacion from './../Main/ImagenVariacion'
@@ -89,7 +88,7 @@ const [datacliente, dispatch] = useReducer(reducer, initialState);
   return (
     <div className={classes.root}>
       <AppBar position="static">
-        <Toolbar style={{backgroundColor:'#20b1e8'}}>
+        {/* <Toolbar style={{backgroundColor:'#20b1e8'}}>
           <Typography variant="h6" className={classes.title}>
             Panel de administración
           </Typography>
@@ -100,7 +99,7 @@ const [datacliente, dispatch] = useReducer(reducer, initialState);
           <PhotoCamera />
         </IconButton>
           <Button color="inherit" >Cerrar sesión</Button>
-        </Toolbar>        
+        </Toolbar>         */}
       </AppBar>
       <AppContext.Provider value={{ datacliente, dispatch }}>
       <TablaCliente/>
